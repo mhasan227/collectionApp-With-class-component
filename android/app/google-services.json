@@ -1,0 +1,164 @@
+{
+  "project_info": {
+    "project_number": "901756464994",
+    "firebase_url": "https://maxispayappfirebaseproject.firebaseio.com",
+    "project_id": "maxispayappfirebaseproject",
+    "storage_bucket": "maxispayappfirebaseproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901756464994:android:61f916d34d35f7455bc63b",
+        "android_client_info": {
+          "package_name": "maxis.systems.efood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "901756464994-mn4r7him3pjffbccfrcf12fcfc7shsi1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9J5RBcyu0KXc-BNljmwd65zbVhEsL4Yg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "901756464994-mn4r7him3pjffbccfrcf12fcfc7shsi1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901756464994:android:6e167aafef8784395bc63b",
+        "android_client_info": {
+          "package_name": "maxis.systems.visitor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "901756464994-mn4r7him3pjffbccfrcf12fcfc7shsi1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9J5RBcyu0KXc-BNljmwd65zbVhEsL4Yg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "901756464994-mn4r7him3pjffbccfrcf12fcfc7shsi1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901756464994:android:637ccf400f3867085bc63b",
+        "android_client_info": {
+          "package_name": "maxis.systems.visitormerchant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "901756464994-mn4r7him3pjffbccfrcf12fcfc7shsi1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9J5RBcyu0KXc-BNljmwd65zbVhEsL4Yg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "901756464994-mn4r7him3pjffbccfrcf12fcfc7shsi1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901756464994:android:d96cedd4969d27165bc63b",
+        "android_client_info": {
+          "package_name": "maxis.systems.we"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "901756464994-mn4r7him3pjffbccfrcf12fcfc7shsi1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9J5RBcyu0KXc-BNljmwd65zbVhEsL4Yg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "901756464994-mn4r7him3pjffbccfrcf12fcfc7shsi1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901756464994:android:17ab294beb61539a",
+        "android_client_info": {
+          "package_name": "maxis.technology.pay"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "901756464994-fs29erauntn0ujshm42pfn9o78j55bch.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "maxis.technology.pay",
+            "certificate_hash": "249bd85caa0cab42dc3fe7ff30afb931beea7df0"
+          }
+        },
+        {
+          "client_id": "901756464994-mn4r7him3pjffbccfrcf12fcfc7shsi1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9J5RBcyu0KXc-BNljmwd65zbVhEsL4Yg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "901756464994-mn4r7him3pjffbccfrcf12fcfc7shsi1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
