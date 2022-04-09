@@ -11,6 +11,7 @@ import PushNotification, {Importance} from "react-native-push-notification";
 import {useDispatch, useSelector} from 'react-redux';
 import {login} from '../../redux/httpClient/api';
 import ApiCall from '../../networking/ApiCall'
+import * as Utility from '../../utility/utility';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {StackActions} from '@react-navigation/native';
 //import {useState} from 'react';
@@ -67,35 +68,23 @@ class SignInScreen extends React.Component {
         console.log(await ApiCall.login(body));
         res = await ApiCall.login(body);
         console.log(res.result.result);
-        console.log(res.result.authResponse);
+        console.log(res.result.roleList[0].name);
         this.setInputValue("loginData", false);
         if(res.result.result=="FAILURE"){
           Alert.alert('Failed', 'Incorrect Userid or Password Try Again');
         }else{
-            //this.setAsyncStorage(res);
+          Utility.setAsyncStorage(res);
+          this.props.navigation.dispatch(StackActions.replace('DrawerNavigator', {res}));
             //const { dispatch } = this.props;
-            this.props.navigation.dispatch(StackActions.replace('DrawerNavigator', {}));
+            //this.props.navigation.dispatch(StackActions.replace('DrawerNavigator', {}));
         }
         
       } else {
         Alert.alert('Failed', 'Field can not be blank');
       }
     };
-    handleChange = e => {
-        this.setState({ username: e.target.value });
-      }
-
-      setAsyncStorage(result){   //set the value to async storage   this is for autologin
-
-        try {
-           AsyncStorage.setItem('isLoggedIn', 'YES');
-           const jsonValue = JSON.stringify(result)
-           AsyncStorage.setItem('isLoggedInn', jsonValue);        
-           this.props.navigation.navigate('HomeScreen',{result});  //(optional)
-        } catch (error) {
-          console.log(error);
-        }
-      }; 
+ 
+ 
     createChannel(){
       PushNotification.createChannel(
         {
@@ -110,70 +99,29 @@ class SignInScreen extends React.Component {
         (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
       );
     }
-    async doLogin(){
-       
-        
-        
-        const gwUrl = 'http://apigw-maxis.nagadpay.com/';
-
-        try {
-            let res = await fetch(gwUrl + 'authentication-service/endpoint/oauth/login', {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: this.state.userName,
-                    password: this.state.password
-                })
-            });
-
-            let result = await res.json();
-
-            console.log(result);
-            //console.warn(result.result.userId);
-            //console.warn(result.result.message);
-            if(result.result.result=== 'SUCCESS'){
-                this.setAsyncStorage(result); // this is implemented for auto login
-                
-                //this.props.navigation.navigate('HomeScreen',{result});
-            }
-            this.setInputValue( "responseMessage", result.result.message );
-            //this.state.test = result.result.message;
-            
-
-            
-            
-
-        }catch (e) {
-            
-        }
-        
-        //console.warn('api');
-        
-       
-    }
+    
     componentDidMount(){
         this.createChannel();
 
            // SplashScreen.hide();  //(optional)  this is done for autologin
-       /* AsyncStorage.getItem('isLoggedIn').then((value) => {
+        AsyncStorage.getItem('isLoggedIn').then((value) => {
             AsyncStorage.getItem('isLoggedInn').then((value2) => {
             
             
                 if(value2 != null){
                     let result= JSON.parse(value2);
+                    console.log("from componennt",+result);
                     if(value && value === 'YES') {
                         //(Hide it once you get value from this)
-                      //this.props.navigation.navigate('DrawerNavigator',{result});
-                      this.props.navigation.dispatch(StackActions.replace('DrawerStack', {}));
+                     // this.props.navigation.navigate('HomeScreen',{result});
+                      this.props.navigation.dispatch(StackActions.replace('DrawerNavigator', {result}));
             
                     } else {
             
                       }
                 }
              })
-        })*/
+        })
     }
 
     render() {

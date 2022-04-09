@@ -13,7 +13,6 @@ import Navigation from './src/navigation';
 import {
   
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   useColorScheme,
@@ -25,6 +24,7 @@ import {SafeAreaProvider,SafeAreaView} from "react-native-safe-area-context";
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
 import {configureAppStore} from './src/redux/configureStore';
+import {StatusBar} from './src/component/StatusBar';
 /*const Section: React.FC<{
   title: string;
 }> = ({children, title}) => {
@@ -57,6 +57,7 @@ const {store, persistor} = configureAppStore();
 const App = () => {
   return (
     <Provider store={store}>
+      <StatusBar />
       <SafeAreaView style={styles.root}>
         <Navigation/>
       </SafeAreaView>

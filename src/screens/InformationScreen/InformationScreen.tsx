@@ -1,7 +1,7 @@
 import React from 'react' ;
 import { View, Text , StyleSheet, Button,StatusBar,TouchableOpacity,DrawerLayoutAndroid, Alert,BackHandler} from 'react-native' ;
-
-
+import style from "./style";
+import DialogContent from "../../component/DialogContent";
 
 class InformationScreen extends React.Component {
     constructor(props) {
@@ -10,20 +10,14 @@ class InformationScreen extends React.Component {
         }
     render() {   
         return (
-            <View>
-                <Text style={styles.temp}>Hello homepage 2</Text>
-                <Button style={styles.button} title='PressRoute' onPress={()=>this.props.navigation.navigate("HomeScreen")}></Button>
-            </View>
-          
+            <DialogContent style={{flex : 1, backgroundColor: 'red'}}>
+                <View>
+                    <Text style={style.temp}>Hello homepage 2</Text>
+                    <Button style={style.button} title='PressRoute' onPress={()=>this.props.navigation.navigate("HomeScreen")}></Button>
+                </View>
+            </DialogContent>
        )
     }
 }
-const styles = StyleSheet.create({
-    temp: {
-        textAlign: 'center',
-        paddingTop: 50,
-        fontSize: 20,
-    },
-});
 
 export default InformationScreen
