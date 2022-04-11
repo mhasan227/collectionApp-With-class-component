@@ -85,5 +85,28 @@ export default {
         }catch (e) {
             
         }
+    },
+
+    api: async(body,token,path)=> {
+        const {username,password}=body
+        const gwUrl = 'http://apigw-maxis.nagadpay.com/';
+
+        try {
+            let res = await fetch(gwUrl + path, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    token: "Bearer " + token,
+                },
+                body: JSON.stringify(body)
+            });
+
+            let result = await res.json();
+            return result;
+            
+
+        }catch (e) {
+            
+        }
     }
 }

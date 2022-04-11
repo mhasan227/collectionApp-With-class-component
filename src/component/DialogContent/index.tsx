@@ -89,7 +89,7 @@ const DialogContent = (props: Props) => {
         </TouchableOpacity>
         <TouchableOpacity
           //style={style.bottomToolbarImageWrapper}
-          onPress={() => {navigation.dispatch(StackActions.push('DrawerStack', {}));}}
+          onPress={() => {navigation.dispatch(StackActions.push('DrawerNavigator', {}));}}
         >
           {/*<Image
             style={style.bottomToolbarImage}

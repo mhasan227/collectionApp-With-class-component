@@ -74,7 +74,7 @@ class SignInScreen extends React.Component {
           Alert.alert('Failed', 'Incorrect Userid or Password Try Again');
         }else{
           Utility.setAsyncStorage(res);
-          this.props.navigation.dispatch(StackActions.replace('DrawerNavigator', {res}));
+          this.props.navigation.dispatch(StackActions.replace('DrawerNavigator', {}));
             //const { dispatch } = this.props;
             //this.props.navigation.dispatch(StackActions.replace('DrawerNavigator', {}));
         }
@@ -114,7 +114,7 @@ class SignInScreen extends React.Component {
                     if(value && value === 'YES') {
                         //(Hide it once you get value from this)
                      // this.props.navigation.navigate('HomeScreen',{result});
-                      this.props.navigation.dispatch(StackActions.replace('DrawerNavigator', {result}));
+                      this.props.navigation.dispatch(StackActions.replace('DrawerNavigator', {}));
             
                     } else {
             
