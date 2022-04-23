@@ -39,11 +39,13 @@ class HomeScreen extends React.Component {
         }
         checkToken = async () => {
           let token;
+          let userId;
           AsyncStorage.getItem('isLoggedInn').then((value2) => {
             AsyncStorage.getItem('userId').then((userId) => {
               this.setState({token: JSON.parse(value2)});
               this.setState({authUserId: JSON.parse(userId)});
               token= JSON.parse(value2);
+              userId= JSON.parse(userId);
               //console.log(JSON.parse(value2));
             });
           });
@@ -53,7 +55,7 @@ class HomeScreen extends React.Component {
                let body={"userId": this.state.authUserId,
                          "token": fcmToken
                 }
-               let res = await ApiCall.setfcmToken(body,this.state.token);
+               let res = await ApiCall.setfcmToken(body,token);
                console.log(res);
                messaging().onNotificationOpenedApp(this.onNotificationHandler);
                messaging().onMessage(this.onNotificationHandler);

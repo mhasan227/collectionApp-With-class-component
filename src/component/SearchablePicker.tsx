@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Text, ViewStyle} from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
+import DropDownPicker from "react-native-custom-dropdown";
 import colors from '../config/colors';
 interface Props {
   items: Array<{label: string; value: any}>;

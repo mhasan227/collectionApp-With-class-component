@@ -8,6 +8,7 @@ interface Props {
   onPress?: () => void;
   routeKey?: string;
   id : string;
+  wallet : Array;
   modalId : string;
 }
 export const Menu = (props: Props) => {
@@ -22,9 +23,15 @@ export const Menu = (props: Props) => {
         if (props.routeKey && props.id && props.modalId) {
           navigation.navigate(props.routeKey,{uID : props.id, mID: props.modalId});
         }
+
+        else if (props.routeKey && props.id && props.wallet) {
+          navigation.navigate(props.routeKey,{uID : props.id, wallet: props.wallet});
+        }
+
         else if (props.routeKey && props.id) {
           navigation.navigate(props.routeKey,{uID : props.id});
         }
+
         else if (props.routeKey) {
           navigation.navigate(props.routeKey);
         }

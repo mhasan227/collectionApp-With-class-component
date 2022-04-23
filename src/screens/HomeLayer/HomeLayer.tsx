@@ -28,6 +28,7 @@ import ApiCall from '../../networking/ApiCall';
 import style from "./style";
 import {Menu} from "./Menu";
 import {ROLE} from "../../types";
+import { Switch } from 'react-native-switch';
 const notifService = new NotifService();
 
 const menusCP = [
@@ -275,21 +276,22 @@ const menusP = [
 		"transfer": true,
 	}
 ];
-
+//let dataWallet= undefined;
 class HomeLayer extends React.Component {  
     constructor(props) {
         super(props);
         console.log(this.props);
         
-        const data = this.props.route.params.wallet;
-        console.log(data);
+        //dataWallet = this.props.route.params.wallet;
+        //console.log(dataWallet);
         let wallets = [];
         
-        console.log("working",+data);
+        //console.log("working",+dataWallet);
         this.setInputValue = this.setInputValue.bind(this);
         //this.getAllWallet = this.getAllWallet.bind(this);
         //this.setInputValue = this.setInputValue.bind(this);
         this.state = {
+          dataWallet: this.props.route.params.wallet,
           token:'',
           data: '',
           authUserId: '',
@@ -299,6 +301,8 @@ class HomeLayer extends React.Component {
           role: '',
           modalVisible: false,
           modalVisible1: false,
+          balanceVisible: false,
+          balance: '',
         }
     }   
 
@@ -307,6 +311,7 @@ class HomeLayer extends React.Component {
         }
         checkToken = async () => {
           let token;
+          console.log("jpl",this.state.dataWallet);
           AsyncStorage.getItem('isLoggedInn').then((value2) => {
             AsyncStorage.getItem('userId').then((userId) => {
               AsyncStorage.getItem('roleListName').then((roleListName) => {
@@ -319,61 +324,21 @@ class HomeLayer extends React.Component {
               })
             });
           });
-            const fcmToken = await messaging().getToken();
-            if (fcmToken) {
-               console.log("token",fcmToken);
-               let body={"userId": this.state.authUserId,
-                         "token": fcmToken
-                }
-               let res = await ApiCall.setfcmToken(body,this.state.token);
-               console.log(res);
-               messaging().onNotificationOpenedApp(this.onNotificationHandler);
-               messaging().onMessage(this.onNotificationHandler);
-               messaging().setBackgroundMessageHandler(this.onNotificationHandler);
-            }else{
-               console.log("Fcm token not available");
-            } 
-//
       }
-         notifier = (remoteMessage: any) => {
-            let title = 'Maxis Collection';
-            let body = 'Action required';
-          
-            if (remoteMessage !== undefined && remoteMessage != null) {
-              try {
-                if (remoteMessage.notification !== undefined) {
-                  title = remoteMessage.notification?.title;
-                  body = remoteMessage.notification?.body;
-                } else if (
-                  remoteMessage.data !== undefined &&
-                  remoteMessage.data !== null
-                ) {
-                  title = remoteMessage.data.title;
-                  body = remoteMessage.data.body;
-                }
-              } catch (e: any) {
-                console.log(e);
-              }
-            }
-          
-            notifService.localNotif(title, body);
-        };
-
-        onNotificationHandler = async (remoteMessage: any) => {
-            this.notifier(remoteMessage);
-            if(remoteMessage.data.title== "Lifting request rejected"){
-              this.props.navigation.navigate("InformationScreen");
-            }
-        };
+ 
         load = async () =>{
          await this.checkToken();
-         this.getAllWallet();
-
-          
-
         }
         setModalVisible = (visible) => {
           this.setState({ modalVisible: visible });
+        }
+
+        setbalanceVisible = (visible) => {
+          this.setState({ balanceVisible: visible });
+        }
+
+        setbalance = (value) => {
+          this.setState({ balance: value });
         }
         ModalForDse(props) {
           const {transfer, collection}= props
@@ -397,7 +362,7 @@ class HomeLayer extends React.Component {
                                 title={menu.title}
                                 icon={menu.icon}
                                 //id={menu.id}
-                                id={data}
+                                id={this.state.dataWallet}
                                 modalId={menu.title}
                                 key={menu.title}
                                 routeKey={menu.routeKey}
@@ -418,36 +383,336 @@ class HomeLayer extends React.Component {
                   return null;
                   }
           }
+
+          ModalForLedger(props) {
+            const {transfer, collection}= props
+          const { modalVisible } = this.state;
+            if (transfer) {
+              return <View style={styles.centeredView}>
+                <Modal
+                animationType='slide'
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                //Alert.alert("Modal has been closed.");
+                this.setModalVisible(!modalVisible);
+                }}
+                 >
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                  {modalLedgerTransfer.map((menu) => (
+                        <Menu
+                          title={menu.title}
+                          icon={menu.icon}
+                          //id={menu.id}
+                          id={this.state.dataWallet}
+                          modalId={menu.title}
+                          key={menu.title}
+                          routeKey={menu.routeKey}
+                          onPress= {() => this.setModalVisible(!modalVisible)}
+                        />
+                      ))}
+                   
+                    <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => this.setModalVisible(!modalVisible)}
+                    >
+                    <Text style={styles.textStyle}>Close</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </Modal>
+            </View>
+            }
+            return null;
+            }
+
+            ModalForMyCashDis(props) {
+              const {transfer, collection}= props;
+              const { modalVisible } = this.state;
+              if (transfer) {
+                return <View style={styles.centeredView}>
+                <Modal
+                animationType='slide'
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                //Alert.alert("Modal has been closed.");
+                this.setModalVisible(!modalVisible);
+                }}
+                  >
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    {modalMyDisTransfer.map((menu) => (
+                        <Menu
+                          title={menu.title}
+                          icon={menu.icon}
+                          //id={menu.id}
+                          id={this.state.dataWallet}
+                          modalId={menu.title}
+                          key={menu.title}
+                          routeKey={menu.routeKey}
+                          onPress= {() => this.setModalVisible(!modalVisible)}
+                        />
+                        ))}
+                      <Pressable
+                      style={[styles.button, styles.buttonClose]}
+                      onPress={() => this.setModalVisible(!modalVisible)}
+                      >
+                      <Text style={styles.textStyle}>Close</Text>
+                      </Pressable>
+                  </View>
+                </View>
+              </Modal>
+              </View>
+              }else {
+                return null; 
+              }
+            }
+
+            ModalForMyCashLocalMerchant(props) {
+              const {transfer}= props;
+              const { modalVisible } = this.state;
+              if (transfer) {
+                return <View style={styles.centeredView}>
+                <Modal
+                animationType='slide'
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                //Alert.alert("Modal has been closed.");
+                this.setModalVisible(!modalVisible);
+                }}
+                  >
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    {modalMyLocalMerchantTransfer.map((menu) => (
+                        <Menu
+                          title={menu.title}
+                          icon={menu.icon}
+                          //id={menu.id}
+                          id={this.state.dataWallet}
+                          //modalId={menu.title}
+                          key={menu.title}
+                          routeKey={menu.routeKey}
+                          onPress= {() => this.setModalVisible(!modalVisible)}
+                        />
+                        ))}
+                      <Pressable
+                      style={[styles.button, styles.buttonClose]}
+                      onPress={() => this.setModalVisible(!modalVisible)}
+                      >
+                      <Text style={styles.textStyle}>Close</Text>
+                      </Pressable>
+                  </View>
+                </View>
+              </Modal>
+              </View>
+              }else {
+                return null; 
+              }
+            }
+
+            ModalForMMPartnerMyCash(props) {
+              const {Cashout}= props;
+              const { modalVisible } = this.state;
+              if (Cashout) {
+                return <View style={styles.centeredView}>
+                <Modal
+                animationType='slide'
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                //Alert.alert("Modal has been closed.");
+                this.setModalVisible(!modalVisible);
+                }}
+              >
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                  {modalMyMotherMerchantCashoutMyCash.map((menu) => (
+                      <Menu
+                        title={menu.title}
+                        icon={menu.icon}
+                        //id={menu.id}
+                        id={this.state.dataWallet}
+                        modalId={menu.title}
+                        key={menu.title}
+                        routeKey={menu.routeKey}
+                        onPress= {() => this.setModalVisible(!modalVisible)}
+                      />
+                      ))}
+                    <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => this.setModalVisible(!modalVisible)}
+                    >
+                    <Text style={styles.textStyle}>Close</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </Modal>
+              </View>
+              }else {
+                return null; 
+              }
+            }
+
+            ModalForOkDistributor(props) {
+              const {transfer, collection}= props;
+              const { modalVisible } = this.state;
+              if (transfer) {
+                return <View style={styles.centeredView}>
+                <Modal
+                animationType='slide'
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                //Alert.alert("Modal has been closed.");
+                this.setModalVisible(!modalVisible);
+                }}
+              >
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                  {modalOkDisTransfer.map((menu) => (
+                      <Menu
+                        title={menu.title}
+                        icon={menu.icon}
+                        //id={menu.id}
+                        id={this.state.dataWallet}
+                        modalId={menu.title}
+                        key={menu.title}
+                        routeKey={menu.routeKey}
+                        onPress= {() => this.setModalVisible(!modalVisible)}
+                      />
+                      ))}
+                    <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => this.setModalVisible(!modalVisible)}
+                    >
+                    <Text style={styles.textStyle}>Close</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </Modal>
+              </View>
+              }else {
+                return null; 
+              }
+            }
+
+            ModalForMMPartnerOk(props) {
+              const {Cashout}= props;
+              const { modalVisible } = this.state;
+              if (Cashout) {
+                return <View style={styles.centeredView}>
+                <Modal
+                animationType='slide'
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                //Alert.alert("Modal has been closed.");
+                this.setModalVisible(!modalVisible);
+                }}
+              >
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                  {modalMyMotherMerchantCashoutOk.map((menu) => (
+                      <Menu
+                        title={menu.title}
+                        icon={menu.icon}
+                        //id={menu.id}
+                        id={this.state.dataWallet}
+                        //modalId={menu.title}
+                        key={menu.title}
+                        routeKey={menu.routeKey}
+                        onPress= {() => this.setModalVisible(!modalVisible)}
+                      />
+                      ))}
+                    <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => this.setModalVisible(!modalVisible)}
+                    >
+                    <Text style={styles.textStyle}>Close</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </Modal>
+              </View>
+              }else {
+                return null; 
+              }
+            }
+
+            
         componentDidMount() {
           this.load();
-            /*messaging().onMessage(async remoteMessage => {
-                Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-              });*/ // its working shows a alert with data
         }
 
-        handleOnClickOfWalletRedirrect = (wallet:any,balance:any) => async () => {
-          console.log("from param"+balance);
-          if(wallet.walletType=== "Distributor" || "DSE" || "Local Merchant" || "Mother Merchant"){
-          navigation.navigate("HomeLayer",{wallet,balance});
+        handleOnClickOfWallet = (dataWallet) => async () => {
+          const { balanceVisible }= this.state;
+          const {transactionAccountId, walletPin} = dataWallet;
+          let body={"transactionAccountId": transactionAccountId,
+                     "walletPin" : walletPin,
+                   };
+          if (transactionAccountId) {
+            let path='collection-service/endpoint/wallet/balance';
+            console.log(this.state.token);
+            let res = await ApiCall.api(body,this.state.token,path);
+            console.log(res);
+                //balance=content.result.data.balance;
+                //setbalance(content.result.data.balance); 
+                this.setbalance(res.result.data.balance);    
           }
-          console.log('antu test');
-                console.log(wallet);
           
+          this.setbalanceVisible(!balanceVisible);
+          setTimeout(() => {this.setbalanceVisible(false)},5000);
         }; 
 
-        getAllWallet = async () => {
-          let body={"accountId": this.state.authUserId,
-                   };
-          let path='collection-service/endpoint/wallet/accountId';
-          console.log(this.state.token);
-          let res = await ApiCall.api(body,this.state.token,path);
-          //console.log("data",+res.result.result);
-          this.setState({wallets: res.result.data});
-        }
-		render() {   
+      
+		render() { 
+          const { balanceVisible }= this.state;
+          const dataWallet=this.props.route.params.wallet;
 	        return (
             <DialogContent style={{flex : 1, backgroundColor: 'red'}}>
+              <View style={{paddingTop: 16,paddingLeft: 16}}>
+                <Switch
+                value={balanceVisible}
+                onValueChange={this.handleOnClickOfWallet(dataWallet)}//{balanceVisible===true?setTimeout(() => setbalanceVisible(tfp),4000):() => setbalanceVisible(trp)}//{(val) => console.log(val)}
+                disabled={false}
+                activeText={this.state.balance?this.state.balance+"BDT": "wait"}
+                inActiveText={'Balance'}
+                barHeight={30}
+                switchWidthMultiplier={5}
+                circleSize={25}
+                backgroundActive={'#fa8072'}
+                backgroundInactive={'purple'}
+                circleActiveColor={'#98fb98'}
+                circleInActiveColor={'#b0e0e6'}/>
+			      	</View>
 	            <View style={{padding: 16}}>
+
+                {this.state.role === ROLE.CASHPOINT && 
+                  (this.props.route.params.wallet.walletName=== "MyCash"&&
+                  this.props.route.params.wallet.walletType=== "Distributor") &&(
+                  <View style={style.bodySection}>
+                    {menusCP.map((menu,index: any) => (
+                      <View key={index}>
+                      <Menu
+                        title={menu.title}
+                        icon={menu.icon}
+                        id={dataWallet}
+                        key={menu.title}
+                        routeKey={menu.transfer?null:menu.routeKey} //for making deposit without modal 
+                        onPress={menu.transfer?() => this.setModalVisible(true):() => this.setModalVisible(false)}
+                      />
+                      {this.ModalForMyCashDis(menu)}
+                      
+                      </View>
+                    ))}
+                
+                  </View>
+            
+                )}
+
                 {this.state.role === ROLE.CASHPOINT && 
                   this.props.route.params.wallet.walletName=== "MyCash" &&
                   this.props.route.params.wallet.walletType=== "DSE" &&(
@@ -459,24 +724,201 @@ class HomeLayer extends React.Component {
                         <Menu
                           title={menu.title}
                           icon={menu.icon}
-                          id={data}//only for without modal homelayer like (collection,deposit)
+                          id={dataWallet}//only for without modal homelayer like (collection,deposit)
                           key={menu.title}
                           routeKey={menu.transfer?null:menu.routeKey}
                           onPress={menu.transfer?() => this.setState({modalVisible:true}):menu.Collection?() => this.setState({modalVisible1:true}):() => this.setState({modalVisible:false})}
-                          
                         />
-								{/*<ModalForDse isTransfer={menu.transfer} isCollection={menu.Collection} />*/}
-                    {this.ModalForDse(menu)}
-
+                        {this.ModalForDse(menu)}
 								        </View>
 							        ))}
 						        </View>
 					        </View>
 				          )}
-                
-                
-	                  {/*<Text style={style.temp}>Hello homepage 1{this.state.authUserId}</Text>
-                    <Button style={style.button} title='PressRoute' onPress={()=>this.props.navigation.navigate("InformationScreen")}></Button>*/}
+
+                {this.state.role === ROLE.CASHPOINT && 
+                    
+                  this.props.route.params.wallet.walletType != "DSE" &&
+                  this.props.route.params.wallet.walletType != "Distributor" &&(
+                    <View style={style.bodySection}>
+                      {menusLedger.map((menu , index: any) => (
+                        <View key={index}>
+                        <Menu
+                          title={menu.title}
+                          icon={menu.icon}
+                          key={menu.title}
+                          id={dataWallet}
+                          routeKey={menu.transfer?null:menu.routeKey}
+                          onPress={menu.transfer?() => this.setModalVisible(true):() => this.setModalVisible(false)}
+                        />
+                        {this.ModalForLedger(menu)}
+                        </View>
+                      ))}
+                    </View>
+                  )}
+
+                  {this.state.role === ROLE.CASHPOINT && 
+                    (this.props.route.params.wallet.walletName=== "Ok" &&
+                    this.props.route.params.wallet.walletType=== "DSE") &&(
+                    <View>
+                      <View style={style.bodySection}>
+                        {menusOkDSR.map((menu , index: any) => (
+                          //menu.routeKey=== "Transfer" &&
+                          <View key={index}>
+                          <Menu
+                            title={menu.title}
+                            icon={menu.icon}
+                            id={dataWallet}
+                            key={menu.title}
+                            routeKey={menu.routeKey}
+                            //onPress={menu.transfer?() => setModalVisible(true):menu.Collection?() => setModalVisible1(true):() => setModalVisible(false)}
+                            
+                          />
+                          {/*<ModalForOkDsr isTransfer={menu.transfer} isCollection={menu.Collection} />*/}
+
+                          </View>
+                        ))}
+                        
+                          
+                      </View>
+                    
+                    </View>
+                  )}
+
+                  {this.state.role === ROLE.CASHPOINT && 
+                    this.props.route.params.wallet.walletName=== "Ok" &&
+                    this.props.route.params.wallet.walletType=== "Distributor" &&(
+                    <View>
+                      <View style={style.bodySection}>
+                        {menusOkDistributor.map((menu , index: any) => (
+                          //menu.routeKey=== "Transfer" &&
+                          <View key={index}>
+                          <Menu
+                            title={menu.title}
+                            icon={menu.icon}
+                            id={dataWallet}
+                            key={menu.title}
+                            routeKey={menu.title==="Deposit"?menu.routeKey:""}
+                            onPress={menu.transfer?() => this.setModalVisible(true):menu.Collection?() => this.setModalVisible1(true):() => this.setModalVisible(false)}
+                            //onPress={() =>Gta55(menu.modal)}
+                          />
+                          
+                          {this.ModalForOkDistributor(menu)}
+                          </View>
+                        ))}
+                        
+                          
+                      </View>
+                    
+                    </View>
+                  )}
+
+                  {this.state.role === ROLE.MERCHANT && 
+                  this.props.route.params.wallet.walletName === "MyCash" &&(
+                    <View style={style.bodySection}>
+                      {menusMM.map((menu , index: any) => (
+                        <View key={index}>
+                        <Menu
+                          title={menu.title}
+                          icon={menu.icon}
+                          key={menu.title}
+                          id={dataWallet}
+                          //routeKey={menu.routeKey}
+                          onPress={menu.Cashout?() => this.setModalVisible(true):() => this.setModalVisible(false)}
+                        />
+                        
+                        {this.ModalForMMPartnerMyCash(menu)}
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                  {this.state.role === ROLE.MERCHANT && 
+                  this.props.route.params.wallet.walletName === "Ok" &&(
+                    <View style={style.bodySection}>
+                      {menusMM.map((menu , index: any) => (
+                        <View key={index}>
+                          <Menu
+                            title={menu.title}
+                            icon={menu.icon}
+                            key={menu.title}
+                            id={dataWallet}
+                            //routeKey={menu.routeKey}
+                            onPress={menu.Cashout?() => this.setModalVisible(true):() => this.setModalVisible(false)}
+                          />
+                          
+                          {this.ModalForMMPartnerOk(menu)}
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                  {this.state.role === ROLE.AGENT && (
+                    <View style={style.bodySection}>
+                      {menusA.map((menu , index: any) => (
+                        <Menu
+                          title={menu.title}
+                          icon={menu.icon}
+                          key={menu.title}
+                          routeKey={menu.routeKey}
+                        />
+                      ))}
+                    </View>
+                  )}
+                  {this.state.role === ROLE.PAYEE &&
+                    (this.props.route.params.wallet.walletName === "Ok"||
+                    this.props.route.params.wallet.walletName === "MyCash")&&(
+                    <View style={style.bodySection}>
+                      {menusP.map((menu , index: any) => (
+                        <View key={index}> 
+                          <Menu
+                            title={menu.title}
+                            icon={menu.icon}
+                            key={menu.title}
+                            //routeKey={menu.routeKey}
+                            onPress={menu.transfer?() => this.setModalVisible(true):() => this.setModalVisible(false)}
+                          />
+                          
+                          {this.ModalForMyCashLocalMerchant(menu)}
+                        </View>
+                      ))}
+                      
+                    </View>
+                  )}
+                  {this.state.role === ROLE.LM && (
+                    <View style={style.bodySection}>
+                      {menusTM.map((menu , index: any) => (
+                        <Menu
+                          title={menu.title}
+                          icon={menu.icon}
+                          key={menu.title}
+                          routeKey={menu.routeKey}
+                        />
+                      ))}
+                    </View>
+                  )}
+                  {this.state.role === ROLE.AM && (
+                    <View style={style.bodySection}>
+                      {menusAM.map((menu) => (
+                        <Menu
+                          title={menu.title}
+                          icon={menu.icon}
+                          key={menu.title}
+                          routeKey={menu.routeKey}
+                        />
+                      ))}
+                    </View>
+                  )}
+                  {this.state.role === ROLE.RM && (
+                    <View style={style.bodySection}>
+                      {menusRM.map((menu) => (
+                        <Menu
+                          title={menu.title}
+                          icon={menu.icon}
+                          key={menu.title}
+                          routeKey={menu.routeKey}
+                        />
+                      ))}
+                    </View>
+                  )}
 	            </View>
             </DialogContent>
 	       )

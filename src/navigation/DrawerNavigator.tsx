@@ -4,6 +4,8 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import HomeScreen from '../screens/HomeScreen';
 import HomeLayer from '../screens/HomeLayer';
 import CashCollection from '../screens/CashCollection';
+import Deposit from '../screens/Deposit';
+import Transfer from '../screens/Transfer';
 import InformationScreen from '../screens/InformationScreen';
 import DrawerContent from '../component/DrawerContent';
 const Drawer = createDrawerNavigator();
@@ -23,6 +25,8 @@ class DrawerNavigation extends React.Component {
                 <Drawer.Screen name="InformationScreen"			    component={InformationScreen}			/>
                 <Drawer.Screen name="HomeLayer"					component={HomeLayer}				/>
                 <Drawer.Screen name="CashCollection"		component={CashCollection}		/>
+                <Drawer.Screen name="Deposit"		component={Deposit}		/>
+                <Drawer.Screen name="Transfer"		component={Transfer}		/>
               </Drawer.Navigator>
             </>
             
