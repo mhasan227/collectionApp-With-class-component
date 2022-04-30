@@ -23,33 +23,39 @@ import {
   attendanceListSelector,
 } from '../../dialog/ListingView/selector';
 import {ROLE} from '../../types';*/
+import ListData from '../../utility/ListData';
+import ApiCall from '../../networking/ApiCall';
 import {ROLE} from '../../types';
+/*const show = async () => {
+  let vare = await ListData.getCollectionData();
+  //console.log(c);
+  return vare;
+}
+let add= show();*/
 export default [
   {
     label: 'Collection Activity',
     routeKey: 'ListView',
     icon: require('../../../assets/deposit.png'),
-    //selector: collectionActivitySelector,
-    //action: getCollectionList,
+    data: "Collection",
     roles: [ROLE.CASHPOINT, ROLE.PAYEE, ROLE.MERCHANT],
   },
-  /*{
+  {
     label: 'Deposit Activity',
     routeKey: 'ListView',
     icon: require('../../../assets/deposit4.png'),
-    selector: liftingRequestsListSelector,
-    action: getLiftingRequestsList,
+    data: "Deposit",
     roles: [ROLE.CASHPOINT],
   },
   {
     label: 'Encashment Activity',
     routeKey: 'ListView',
     icon: require('../../../assets/encashment.png'),
-    selector: encasementListSelector,
-    action: getEncasementList,
+    //selector: encasementListSelector,
+    //action: getEncasementList,
     roles: [ROLE.MERCHANT],
   },
-  {
+  /*{
     label: 'Cashout Activity',
     routeKey: 'ListView',
     icon: require('../../../assets/atm.png'),

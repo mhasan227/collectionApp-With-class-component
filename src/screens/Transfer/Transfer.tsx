@@ -41,7 +41,7 @@ class Transfer extends React.Component {
         //Alert.alert(filterWallet);
         let wallets = [];
         
-        console.log("working",+data);
+        console.log("working",data);
         this.setInputValue = this.setInputValue.bind(this);
         //this.getAllWallet = this.getAllWallet.bind(this);
         //this.setInputValue = this.setInputValue.bind(this);
@@ -51,19 +51,13 @@ class Transfer extends React.Component {
           authUserId: '',
           userName: '',
           authResponse: '',
-          amount: undefined,
-          bankIndex: undefined,
-          reference: undefined,
-          comments: undefined,
-          currencyType: 'MFS',
-          currency: undefined,
+          transferAmount: undefined,
+          walletPin: undefined,
+          transferWalletId: "",
+          transferType: undefined,
           open: false,
-          merchant: [],
-          getAllBank:[],
-          getAllBankRaw: [],
-          payee: [],
-          getAllPayee: [],
-          depositLoading: false,
+          wallets: [],
+          transferLoading: false,
         }
 
       }
@@ -71,13 +65,28 @@ class Transfer extends React.Component {
           this.setState({ [property]: val });
         }
         onScreenFocus = () => {
-          //Alert.alert(this.props.route.params.uID.walletName);
-          this.setInputValue('currency',this.props.route.params.uID.walletName);
+          let transferTypes = this.filterTransferTypes();
+          this.setInputValue('transferType',transferTypes[0].value);
         }
-        componentDidMount() {
+        getAsyncStorage = async () =>{
+          let token;
+          let user;
+          AsyncStorage.getItem('isLoggedInn').then((value2) => {
+            AsyncStorage.getItem('userId').then((userId) => {
+              this.setState({token: JSON.parse(value2)});
+              this.setState({authUserId: JSON.parse(userId)});
+              token= JSON.parse(value2);
+              user= JSON.parse(userId);
+              console.log("transfer",this.state.token);
+              this.getAllWalletListData();
+            });
+          });
+        }
+       async componentDidMount() {
           this.props.navigation.addListener('focus', this.onScreenFocus)
-          this.setInputValue('currency',this.props.route.params.uID.walletName);
-          this.getAllWalletListData();
+          //this.setInputValue('currency',this.props.route.params.uID.walletName);
+          this.getAsyncStorage();
+          //this.getAllWalletListData();
           //this.getAllPayeeListData();
           //this.getAllCollectionListData();
         }
@@ -86,219 +95,238 @@ class Transfer extends React.Component {
           this.setState({[key]: value});
         }
         getAllWalletListData = async () => {
-          let token;
-          let user;
-          AsyncStorage.getItem('isLoggedInn').then((value2) => {
-            AsyncStorage.getItem('userId').then((userId) => {
-              this.setState({token: JSON.parse(value2)});
-              this.setState({authUserId: JSON.parse(userId)});
-              token= JSON.parse(value2);
-              user= JSON.parse(userId);
-              
-            });
-          });
-          let body={"accountId": user,
-                   };
-          let path='collection-service/endpoint/wallet/accountId';
-          console.log(this.state.token);
-          let res = await ApiCall.api(body,token,path);
-          console.log(res.result.result);
-          console.log(res);
-          //this.setState({merchant: res.result.response[0]});
-          let wallets= res.result.data;
-          Alert.alert(wallets);
-            //console.log(banks[2].label);
-          //this.setState({getAllBank: banks});
-          //this.setState({getAllBankRaw: res.result.data});
-        }
-        getAllPayeeListData = async () => {
-          let token;
-          let user;
-          AsyncStorage.getItem('isLoggedInn').then((value2) => {
-            AsyncStorage.getItem('userId').then((userId) => {
-              this.setState({token: JSON.parse(value2)});
-              this.setState({authUserId: JSON.parse(userId)});
-              token= JSON.parse(value2);
-              user= JSON.parse(userId);
-              
-            });
-          });
+          
           let body={"accountId": this.state.authUserId,
                    };
-          let path='authorization-service/endpoint/user/payee';
-          console.log(this.state.token);
-          let res = await ApiCall.api(body,token,path);
-          this.setState({payee: res.result.response[0]}); // sudhu prothom tar list ana hoise 
-          let payees= res.result.response[0].map((val)=>({label: `${val.name}`,
-            value: val.userId,}));
-          this.setState({getAllPayee: payees});
-        }
-        getAllCollectionListData = async () => {
-          let token;
-          let user;
-          AsyncStorage.getItem('isLoggedInn').then((value2) => {
-            AsyncStorage.getItem('userId').then((userId) => {
-              this.setState({token: JSON.parse(value2)});
-              this.setState({authUserId: JSON.parse(userId)});
-              token= JSON.parse(value2);
-              user= JSON.parse(userId);
-              
-            });
-          });
-          let body={};
-          let path='collection-service/endpoint/collection/type';
-          console.log(this.state.token);
-          let res = await ApiCall.apiget(token,path);
-          this.setState({collection: res.result.data}); // sudhu prothom tar list ana hoise 
-          let collections= res.result.data.map((val)=>({label: `${val.collectionType}`,
-            value: val.id}));
-          this.setState({getAllCollection: collections});
+          let path='collection-service/endpoint/wallet/accountId';
+          
+            console.log("transfer 2",this.state.authUserId);
+          
+          let res = await ApiCall.api(body,this.state.token,path);
+          console.log(res.result.data);
+          console.log(res);
+          this.setState({wallets: res.result.data});
+          let wallets= res.result.data;
+          
         }
 
+        getTransferTypes = (walletListPrimary: any) => {
+          
+          console.log("====walletListPrimary====");
+          console.log(walletListPrimary);
+            let optionOkDistributorDSE = '{"label": "From Ok Distributor [Ok_WALLET_DISTRIBUTOR] --> To Ok DSE [Ok_WALLET_DSE]", "value": "TRANSFER_TYPE_Ok_DISTRIBUTOR_DSE"}';
+            let optionMyCashDistributorDSE = '{"label": "From MyCash Distributor [MYCASH_WALLET_DISTRIBUTOR] --> To MyCash DSE [MYCASH_WALLET_DSE]", "value": "TRANSFER_TYPE_MYCASH_DISTRIBUTOR_DSE"}';
+            let optionMyCashDSEDistributor = '{"label": "From MyCash DSE [MYCASH_WALLET_DSE] --> To MyCash Distributor [MYCASH_WALLET_DISTRIBUTOR]", "value": "TRANSFER_TYPE_MYCASH_DSE_DISTRIBUTOR"}';
+            let optionGeneralMyCashDistributor = '{"label": "From Lifting Balance --> To MyCash Distributor [MYCASH_WALLET_DISTRIBUTOR]", "value": "TRANSFER_TYPE_GENERAL_MYCASH_DISTRIBUTOR"}';
+            let optionMyCashDistributorGeneral = '{"label": "From MyCash Distributor [MYCASH_WALLET_DISTRIBUTOR] --> To Lifting Balance", "value": "TRANSFER_TYPE_MYCASH_DISTRIBUTOR_GENERAL"}';
+
+            let transferTypeCurrent = [];
+
+            for (let index = 0; walletListPrimary !== undefined && walletListPrimary !== null && index < walletListPrimary.length; index++)
+            {
+              let ele = walletListPrimary[index];
+              if (ele.walletType.toUpperCase() === "DSE" && ele.walletName.toUpperCase() === "MYCASH")
+              {
+                optionMyCashDistributorDSE = optionMyCashDistributorDSE.replace("MYCASH_WALLET_DSE", ele.walletId);
+                optionMyCashDSEDistributor = optionMyCashDSEDistributor.replace("MYCASH_WALLET_DSE", ele.walletId);
+              }
+              else if (ele.walletType.toUpperCase() === "DISTRIBUTOR" && ele.walletName.toUpperCase() === "MYCASH")
+              {
+                optionMyCashDistributorDSE = optionMyCashDistributorDSE.replace("MYCASH_WALLET_DISTRIBUTOR", ele.walletId);
+                optionMyCashDSEDistributor = optionMyCashDSEDistributor.replace("MYCASH_WALLET_DISTRIBUTOR", ele.walletId);
+                optionGeneralMyCashDistributor = optionGeneralMyCashDistributor.replace("MYCASH_WALLET_DISTRIBUTOR", ele.walletId);
+                optionMyCashDistributorGeneral = optionMyCashDistributorGeneral.replace("MYCASH_WALLET_DISTRIBUTOR", ele.walletId);
+              }
+
+              else if (ele.walletType.toUpperCase() === "DSE" && ele.walletName.toUpperCase() === "OK")
+              {
+                optionOkDistributorDSE = optionOkDistributorDSE.replace("Ok_WALLET_DSE", ele.walletId);
+                
+              }
+              else if (ele.walletType.toUpperCase() === "DISTRIBUTOR" && ele.walletName.toUpperCase() === "OK")
+              {
+                optionOkDistributorDSE = optionOkDistributorDSE.replace("Ok_WALLET_DISTRIBUTOR", ele.walletId);
+                
+              }
+            }
+            transferTypeCurrent.push(JSON.parse(optionOkDistributorDSE));
+            transferTypeCurrent.push(JSON.parse(optionMyCashDistributorDSE));
+            transferTypeCurrent.push(JSON.parse(optionMyCashDSEDistributor));
+            transferTypeCurrent.push(JSON.parse(optionGeneralMyCashDistributor));
+            transferTypeCurrent.push(JSON.parse(optionMyCashDistributorGeneral));
+            
+            return transferTypeCurrent;
+  
+        }
+        
+
         handleSubmit = async () => {
-          this.setState({depositLoading: true});
+          let urlMM='https://okwalletpayment.onebank.com.bd/okwalletepay/okepay/';
+          this.setState({transferLoading: true});
           let token=this.state.token;
-          const {amount, 
-                 bankIndex,
-                 reference,
-                 comments,
-                 currencyType,
-                 currency,
-                 authUserId,
+          const { transferAmount,
+                  walletPin,
+                  transferWalletId,
+                  transferType,
+                  authUserId,
                  }= this.state;
-          /*let path='collection-service/endpoint/wallet/banks';
-          console.log(this.state.token);
-          let res = await ApiCall.apiget(this.state.token,path);
-          console.log(res.result.result);*/
-          const banksData= this.state.getAllBankRaw;
-          if (authUserId && bankIndex !== undefined && amount && currency){
+          console.log("imp",authUserId);
+          console.log("imp",transferAmount);
+
+          //Alert.alert(transferType);
+          if (transferAmount){
               //Alert.alert(token);
-              let body={
-                        cashpointId: authUserId,
-                        amount,
-                        depositeSlipImage: '',
-                        currencyType: 'MFS',
-                        currency: currency,
-                        bankDetails:  banksData[bankIndex],
-                        reference,
-                        comments,
-                        approvalDetails: {
-                          approvalDecision: '',
-                          decisionTime: null,
-                          approvalTransactionId: '',
-                          liftingAccountId: '',
-                          liftingWalletId: '',
-                        },
+              let body={userId: authUserId,
+                        transferAmount,
+                        walletPin,
+                        transferWalletId: '',
+                        transferType,
                    };
-              let path='collection-service/endpoint/lifting';
+              //Alert.alert(walletPin);
+              let path='collection-service/endpoint/wallet/transfer-by-type';
               let res = await ApiCall.api(body,token,path);
-              this.setState({depositLoading: false});
+              this.setState({transferLoading: false});
+              console.log(res);
               if (res.result.result== 'Success'){
-                  Alert.alert("Wallet Deposit successful");
+                  Alert.alert("Transfer successful");
                   this.props.navigation.goBack();
               }
               else{
-                Alert.alert("Wallet Deposit Failed");
+                Alert.alert("Transfer Failed");
               }
-              console.log(res);
+
+              if(transferType == "TRANSFER_TYPE_Ok_DISTRIBUTOR_DSE"){
+
+                if (res){
+                  urlMM=urlMM + res.result.data;
+                  //Alert.alert(urlMM);
+                  this.props.navigation.navigate("WebViewUn",{urlMM});
+                }else if(res.error){
+                  urlMM=urlMM + res.result.data;
+                  
+                  navigation.navigate("WebViewUn",{urlMM});
+                }
+              }
           }
 
         }
-		render() {   
-          //const { open, value, items } = this.state;
-          let wallett= [{"label":"MyCash", "value":"MyCash"},
-                        {"label":"Ok", "value":"Ok"},
-                        {"label":"General", "value":"General"}];
 
-          //let filterWallet= this.props.route.params.uID.walletName;
-          //for convert BDT to Genaral 
-          /*if(filterWallet=="BDT"){
+        filterTransferTypes = () => {
+          
+            let transferTypes = this.getTransferTypes(this.state.wallets);
 
-            filterWallet="General";
-          }// End conversion*/
-          //Alert.alert(filterWallet);
-          /*wallett = wallett.filter(function(item){
-                return item.value ==filterWallet;
-            }).map(function({label, value}){
-                return {label, value};
-            });*/
+              console.log(this.props.route.params.mID);
+              console.log(this.props.route.params.uID.walletName);
+            if(this.props.route.params.mID=="DSE" && this.props.route.params.uID.walletName== "MyCash"){
+              transferTypes = transferTypes.filter(function(item){
+                return item.value == 'TRANSFER_TYPE_MYCASH_DISTRIBUTOR_DSE';
+             }).map(function({label, value}){
+                 return {label, value};
+             });
+              console.log(transferTypes);
+              console.log(transferTypes[0]);
+            
+            }
+            else if(this.props.route.params.mID=="Ledger" && this.props.route.params.uID.walletName== "MyCash"){
+              transferTypes = transferTypes.filter(function(item){
+                return item.value == 'TRANSFER_TYPE_MYCASH_DISTRIBUTOR_GENERAL';
+             }).map(function({label, value}){
+                 return {label, value};
+             });
+           
+            }
+            else if(this.props.route.params.mID=="Ok B2B DSR" && this.props.route.params.uID.walletName== "Ok"){
+              transferTypes = transferTypes.filter(function(item){
+                return item.value == 'TRANSFER_TYPE_Ok_DISTRIBUTOR_DSE';
+             }).map(function({label, value}){
+                 return {label, value};
+             });
+          
+            }
+            else if(this.props.route.params.mID=="MyCash Distributor" && this.props.route.params.uID.walletName== "BDT"){
+              transferTypes = transferTypes.filter(function(item){
+                return item.value == 'TRANSFER_TYPE_GENERAL_MYCASH_DISTRIBUTOR';
+             }).map(function({label, value}){
+                 return {label, value};
+             });
+            
+            }
+            else if(this.props.route.params.mID=="MyCash Distributor" && this.props.route.params.uID.walletName== "MyCash"){
+              transferTypes = transferTypes.filter(function(item){
+                return item.value == 'TRANSFER_TYPE_MYCASH_DSE_DISTRIBUTOR';
+             }).map(function({label, value}){
+                 return {label, value};
+             });
+         
+            }
+            else{let transferTypes = this.getTransferTypes(this.state.wallets);}
+  
+            console.log(transferTypes);
+            return transferTypes;
+        }
+        
+		  render() {   
+         
+          let transferTypes= this.filterTransferTypes();
+          
 	        return (
             <DialogContent>  
               <View style={style.formBody}>
-                  <View style={style.formBodyInputWrapper}>
-                    <Text style={style.formInputLabel}>Amount</Text>
-                    <TextInput
-                      style={style.formInput}
-                      keyboardType={'number-pad'}
-                      value={this.state.amount}
-                      onChangeText={(text) => this.setInputValue('amount', text)}
-                    />
-                  </View>
-                  <View style={style.formBodyInputWrapper}>
-                    <Text style={style.formInputLabel}>Bank</Text>
+                <View style={style.formBodyInputWrapper}>
+                  <Text style={style.formInputLabel}>Type:</Text>
                     <SearchablePicker
-                      updateKey="bankIndex"
-                      defaultValue={this.state.bankIndex}
-                      items={this.state.getAllBank}
-                      onChangeItem={this.sendvalue}
-                    />
-                  </View>
-                  <View style={style.formBodyInputWrapper}>
-                    <Text style={style.formInputLabel}>Currency type</Text>
-                    <TextInput
-                      editable={false}
-                      style={style.formInput}
-                      value={this.state.currencyType}
-                      onChangeText={(text) => this.setInputValue('currencyType', text)}
-                    />
-                  </View>
-                  <View style={style.formBodyInputWrapper}>
-                    <Text style={style.formInputLabel}>Currency</Text>
-                    <SearchablePicker
-                      updateKey="currency"
-                      defaultValue={wallett[0].value}
-                      items={wallett}
-                      onChangeItem={this.sendvalue}
-                    />
-                  </View>
-                  <View style={style.formBodyInputWrapper}>
-                    <Text style={style.formInputLabel}>Ref/Check</Text>
-                    <TextInput
-                      style={style.formInput}
-                      value={this.state.reference}
-                      onChangeText={(text) => this.setInputValue('reference', text)}
-                    />
-                  </View>
-                  <View style={style.formBodyInputWrapper}>
-                    <Text style={style.formInputLabel}>Comment</Text>
-                    <TextInput
-                      style={style.formInput}
-                      value={this.state.comments}
-                      onChangeText={(text) => this.setInputValue('comments', text)}
-                    />
-                  </View>
-                  <View style={style.buttonWrapper}>
-                    <TouchableOpacity
-                      style={style.cancelButton}
-                      onPress={() => {
-                        this.props.navigation.goBack();
+                    updateKey="transferType"
+                    defaultValue={transferTypes[0].value}
+                    //searchablePlaceholder={transferTypes[0].label}
+                    //disabled={data.uID.walletType=== "Distributor"||"DSE"?true:false}
+                    items={transferTypes}
+                    onChangeItem={(itemValue, itemIndex) => {
+                        console.log("==== itemIndex ====");
+                        console.log(itemIndex);
+                        this.sendvalue('transferType', itemIndex);
                       }}
-                      disabled={false}>
-                      <Text style={style.cancelButtonText}>Cancel</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={style.submitButton}
-                      onPress={this.handleSubmit}
-                      disabled={this.state.depositLoading}>
-                      {this.state.depositLoading ? (
-                        <ActivityIndicator size={'small'} color={colors.white} />
-                      ) : (
-                        <Text style={style.submitButtonText}>Submit</Text>
-                      )}
-                    </TouchableOpacity>
-                  </View>
+                  />
+                </View>
+                <View style={style.formBodyInputWrapper}>
+                  <Text style={style.formInputLabel}>Amount:</Text>
+                  <TextInput
+                    style={style.formInput}
+                    keyboardType={'number-pad'}
+                    value={this.state.transferAmount}
+                    onChangeText={(text) => this.setInputValue('transferAmount', text)}
+                  />
+                </View>
+                <View style={style.formBodyInputWrapper}>
+                  <Text style={style.formInputLabel}>PIN:</Text>
+                  <TextInput
+                    style={style.formInput}
+                    keyboardType={'number-pad'}
+                    secureTextEntry={true}
+                    value={this.state.walletPin}
+                    onChangeText={(text) => this.setInputValue('walletPin', text)}
+                  />
+                </View>
+                <View style={style.buttonWrapper}>
+                  <TouchableOpacity
+                    style={style.cancelButton}
+                    onPress={() => {
+                      this.props.navigation.goBack();
+                    }}
+                    disabled={false}>
+                    <Text style={style.cancelButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={style.submitButton}
+                    onPress={this.handleSubmit}
+                    disabled={this.state.transferLoading}>
+                    {this.state.transferLoading ? (
+                      <ActivityIndicator size={'small'} color={colors.white} />
+                    ) : (
+                      <Text style={style.submitButtonText}>Submit</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
               </View>
-              
             </DialogContent>
 
 	         )  

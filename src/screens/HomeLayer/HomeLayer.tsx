@@ -362,7 +362,7 @@ class HomeLayer extends React.Component {
                                 title={menu.title}
                                 icon={menu.icon}
                                 //id={menu.id}
-                                id={this.state.dataWallet}
+                                id={this.props.route.params.wallet}
                                 modalId={menu.title}
                                 key={menu.title}
                                 routeKey={menu.routeKey}
@@ -405,7 +405,7 @@ class HomeLayer extends React.Component {
                           title={menu.title}
                           icon={menu.icon}
                           //id={menu.id}
-                          id={this.state.dataWallet}
+                          id={this.props.route.params.wallet}
                           modalId={menu.title}
                           key={menu.title}
                           routeKey={menu.routeKey}
@@ -448,7 +448,7 @@ class HomeLayer extends React.Component {
                           title={menu.title}
                           icon={menu.icon}
                           //id={menu.id}
-                          id={this.state.dataWallet}
+                          id={this.props.route.params.wallet}
                           modalId={menu.title}
                           key={menu.title}
                           routeKey={menu.routeKey}
@@ -491,7 +491,7 @@ class HomeLayer extends React.Component {
                           title={menu.title}
                           icon={menu.icon}
                           //id={menu.id}
-                          id={this.state.dataWallet}
+                          id={this.props.route.params.wallet}
                           //modalId={menu.title}
                           key={menu.title}
                           routeKey={menu.routeKey}
@@ -534,7 +534,7 @@ class HomeLayer extends React.Component {
                         title={menu.title}
                         icon={menu.icon}
                         //id={menu.id}
-                        id={this.state.dataWallet}
+                        id={this.props.route.params.wallet}
                         modalId={menu.title}
                         key={menu.title}
                         routeKey={menu.routeKey}
@@ -577,7 +577,7 @@ class HomeLayer extends React.Component {
                         title={menu.title}
                         icon={menu.icon}
                         //id={menu.id}
-                        id={this.state.dataWallet}
+                        id={this.props.route.params.wallet}
                         modalId={menu.title}
                         key={menu.title}
                         routeKey={menu.routeKey}
@@ -620,7 +620,7 @@ class HomeLayer extends React.Component {
                         title={menu.title}
                         icon={menu.icon}
                         //id={menu.id}
-                        id={this.state.dataWallet}
+                        id={this.props.route.params.wallet}
                         //modalId={menu.title}
                         key={menu.title}
                         routeKey={menu.routeKey}

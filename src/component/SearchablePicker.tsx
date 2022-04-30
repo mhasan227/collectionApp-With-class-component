@@ -18,7 +18,7 @@ const SearchablePicker = (props: Props) => {
       disabled={props.disabled}
       items={props.items}
       defaultValue={props.defaultValue}
-      containerStyle={{height: 40}}
+      containerStyle={{height: 46}}
       style={{
         backgroundColor: '#fdecf5',
         borderWidth: 1,

@@ -65,7 +65,7 @@ export default {
     },
 
     setfcmToken: async(body,token)=> {
-        const {username,password}=body
+        //const {username,password}=body
         const gwUrl = 'http://apigw-maxis.nagadpay.com/';
 
         try {

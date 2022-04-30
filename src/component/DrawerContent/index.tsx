@@ -18,6 +18,7 @@ interface DrawerItemProps {
   label: string;
   icon: any;
   routeKey?: string;
+  data: any;
   onPress?: () => void;
   selector?: Selector<any, any>;
   action?: (accountId: any) => AnyAction;
@@ -31,9 +32,7 @@ const DrawerItem = (props: DrawerItemProps) => {
       onPress={() => {
         if (props.routeKey) {
           navigation.navigate(props.routeKey, {
-            title: props.label,
-            ...(props.selector ? {selector: props.selector} : {}),
-            ...(props.action ? {action: props.action} : {}),
+           data: props?.data ,
           });
         }
         if (props.onPress) {
@@ -56,6 +55,7 @@ const DrawerContent = (props: any) => {
   //const role = Utility.getAccessKey();
   const [role,setrole]=useState('');
   useEffect(() => {
+    
     AsyncStorage.getItem('roleListName').then((roleListName) => {
       //this.setState({setrole: JSON.parse(userName)});
       setrole(JSON.parse(roleListName));
@@ -77,6 +77,7 @@ const DrawerContent = (props: any) => {
                 <DrawerItem
                   label={ele.label}
                   icon={ele.icon}
+                  data={ele.data}
                   key={ele.label}
                   routeKey={ele.routeKey}
                   selector={ele.selector}

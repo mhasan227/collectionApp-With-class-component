@@ -90,7 +90,7 @@ class CashCollection extends React.Component {
           this.setInputValue('walletType',this.props.route.params.uID.walletName);
         }
         componentDidMount() {
-          this.props.navigation.addListener('focus', this.onScreenFocus)
+          this.props.navigation.addListener('focus', this.onScreenFocus);
           this.setInputValue('walletType',this.props.route.params.uID.walletName);
           this.getAllMerchantListData();
           this.getAllPayeeListData();
@@ -203,6 +203,25 @@ class CashCollection extends React.Component {
               let path='collection-service/endpoint/collection';
               let res = await ApiCall.api(body,token,path);
               console.log(res);
+              if (res.result.result== 'Success'){
+                Alert.alert("Transfer successful");
+                this.props.navigation.goBack();
+              }
+              else{
+                Alert.alert("Transfer Failed");
+              }
+              if(walletType == "Ok"){
+
+                if (res){
+                  urlMM=urlMM + res.result.message;
+                  //Alert.alert(urlMM);
+                  this.props.navigation.navigate("WebViewUn",{urlMM});
+                }else if(res.error){
+                  urlMM=urlMM + res.result.message;
+                  
+                  navigation.navigate("WebViewUn",{urlMM});
+                }
+              }
           }
 
         }
