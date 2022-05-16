@@ -46,6 +46,8 @@ class CollectionListView extends React.Component {
           let token;
           let user;
           let role;
+          this.setState({test: []});
+          console.log('focus');
           AsyncStorage.getItem('isLoggedInn').then((value2) => {
             AsyncStorage.getItem('userId').then((userId) => {
               AsyncStorage.getItem('roleListName').then((roleListName) => {
@@ -56,6 +58,7 @@ class CollectionListView extends React.Component {
                 user= JSON.parse(userId);
                 role= JSON.parse(roleListName);
                 //console.log("transfer",this.state.role);
+                this.setState({test: ""});
                 this.show(token,user,role);
               });
             });
@@ -63,16 +66,47 @@ class CollectionListView extends React.Component {
         }
         show = async (token,userId,role) => {
           let vare;
+          //this.setState({test: ""});
           if (this.props.route.params.data=='Collection'){
             vare = await ListData.getCollectionData(token,userId,role);
           }
           else if (this.props.route.params.data=='Deposit'){
             vare = await ListData.getDepositData(token,userId,role);
           }
+          else if (this.props.route.params.data=='Encashment'){
+            vare = await ListData.getEnCashMentData(token,userId,role);
+          }
+          else if (this.props.route.params.data=='Cashout'){
+            vare = await ListData.getCashOutData(token,userId,role);
+          }
+          else if (this.props.route.params.data=='Agent'){
+            vare = await ListData.getCashpointDSEAgentTransferData(token,userId,role);
+          }
+          else if (this.props.route.params.data=='Currency'){
+            vare = await ListData.getCashpointCurrencyTransferList(token,userId,role);
+          }
+          else if (this.props.route.params.data=='Send Money'){
+            vare = await ListData.getPayeeMerchantTransferList(token,userId,role);
+          }
+          else if (this.props.route.params.data=='Manager Credit'){
+            vare = await ListData.getManagerCreditTransferList(token,userId,role);
+          }
+          else if (this.props.route.params.data=='Merchant Credit'){
+            vare = await ListData.getMerchantCreditTransferList(token,userId,role);
+          }
+          else if (this.props.route.params.data=='Attendance List'){
+            vare = await ListData.getAttendanceList(token,userId,role);
+          }
           this.setState({test: vare});
           //return vare;
         }
+        componentDidUpdate(prevProps, prevState) {
+          if (prevProps.route.params.data !== this.props.route.params.data) {
+            this.getAsyncStorage();
+          }
+  }
        async componentDidMount() {
+          //this.props.navigation.addListener('focus', ()=>this.getAsyncStorage());
           this.getAsyncStorage();
           console.log( this.state.authUserId);
         }

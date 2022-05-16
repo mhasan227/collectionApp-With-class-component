@@ -24,15 +24,15 @@ import DropDownPicker from "react-native-custom-dropdown";
 
 
 interface FormData {
-  transferAmount?: string;
-  walletPin?: string;
-  transferWalletId?: string;
-  transferType?: string;
-}
+  toUserId: string,
+  transferAmount: string,
+  userId: string,
+  payeeId?: string,
+};
 
 //let urlMM='https://okwalletpayment.onebank.com.bd/okwalletepay/okepay/';
 
-class Transfer extends React.Component {  
+class RiderCredit extends React.Component {  
     constructor(props) {
         super(props);
         console.log(this.props);
@@ -56,7 +56,7 @@ class Transfer extends React.Component {
           transferWalletId: "",
           transferType: undefined,
           open: false,
-          wallets: [],
+          rider: [],
           transferLoading: false,
         }
 
@@ -65,8 +65,6 @@ class Transfer extends React.Component {
           this.setState({ [property]: val });
         }
         onScreenFocus = () => {
-          let transferTypes = this.filterTransferTypes();
-          this.setInputValue('transferType',transferTypes[0].value);
         }
         getAsyncStorage = async () =>{
           let token;
@@ -78,7 +76,7 @@ class Transfer extends React.Component {
               token= JSON.parse(value2);
               user= JSON.parse(userId);
               console.log("transfer",this.state.token);
-              this.getAllWalletListData();
+              this.getAllRiderListData();
             });
           });
         }
@@ -94,74 +92,24 @@ class Transfer extends React.Component {
         sendvalue=(key , value) => {
           this.setState({[key]: value});
         }
-        getAllWalletListData = async () => {
+        getAllRiderListData = async () => {
           
           let body={"accountId": this.state.authUserId,
                    };
-          let path='collection-service/endpoint/wallet/accountId';
+          let path='authorization-service/endpoint/user/rider';
           
             console.log("transfer 2",this.state.authUserId);
           
           let res = await ApiCall.api(body,this.state.token,path);
-          console.log(res.result.data);
+          console.log(res.result.response[0]);
           console.log(res);
-          this.setState({wallets: res.result.data});
-          let wallets= res.result.data;
+          this.setState({rider: res.result.response[0]});
+          //let wallets= res.result.data;
           
         }
-
-        getTransferTypes = (walletListPrimary: any) => {
-          
-          console.log("====walletListPrimary====");
-          console.log(walletListPrimary);
-            let optionOkDistributorDSE = '{"label": "From Ok Distributor [Ok_WALLET_DISTRIBUTOR] --> To Ok DSE [Ok_WALLET_DSE]", "value": "TRANSFER_TYPE_Ok_DISTRIBUTOR_DSE"}';
-            let optionMyCashDistributorDSE = '{"label": "From MyCash Distributor [MYCASH_WALLET_DISTRIBUTOR] --> To MyCash DSE [MYCASH_WALLET_DSE]", "value": "TRANSFER_TYPE_MYCASH_DISTRIBUTOR_DSE"}';
-            let optionMyCashDSEDistributor = '{"label": "From MyCash DSE [MYCASH_WALLET_DSE] --> To MyCash Distributor [MYCASH_WALLET_DISTRIBUTOR]", "value": "TRANSFER_TYPE_MYCASH_DSE_DISTRIBUTOR"}';
-            let optionGeneralMyCashDistributor = '{"label": "From Lifting Balance --> To MyCash Distributor [MYCASH_WALLET_DISTRIBUTOR]", "value": "TRANSFER_TYPE_GENERAL_MYCASH_DISTRIBUTOR"}';
-            let optionMyCashDistributorGeneral = '{"label": "From MyCash Distributor [MYCASH_WALLET_DISTRIBUTOR] --> To Lifting Balance", "value": "TRANSFER_TYPE_MYCASH_DISTRIBUTOR_GENERAL"}';
-
-            let transferTypeCurrent = [];
-
-            for (let index = 0; walletListPrimary !== undefined && walletListPrimary !== null && index < walletListPrimary.length; index++)
-            {
-              let ele = walletListPrimary[index];
-              if (ele.walletType.toUpperCase() === "DSE" && ele.walletName.toUpperCase() === "MYCASH")
-              {
-                optionMyCashDistributorDSE = optionMyCashDistributorDSE.replace("MYCASH_WALLET_DSE", ele.walletId);
-                optionMyCashDSEDistributor = optionMyCashDSEDistributor.replace("MYCASH_WALLET_DSE", ele.walletId);
-              }
-              else if (ele.walletType.toUpperCase() === "DISTRIBUTOR" && ele.walletName.toUpperCase() === "MYCASH")
-              {
-                optionMyCashDistributorDSE = optionMyCashDistributorDSE.replace("MYCASH_WALLET_DISTRIBUTOR", ele.walletId);
-                optionMyCashDSEDistributor = optionMyCashDSEDistributor.replace("MYCASH_WALLET_DISTRIBUTOR", ele.walletId);
-                optionGeneralMyCashDistributor = optionGeneralMyCashDistributor.replace("MYCASH_WALLET_DISTRIBUTOR", ele.walletId);
-                optionMyCashDistributorGeneral = optionMyCashDistributorGeneral.replace("MYCASH_WALLET_DISTRIBUTOR", ele.walletId);
-              }
-
-              else if (ele.walletType.toUpperCase() === "DSE" && ele.walletName.toUpperCase() === "OK")
-              {
-                optionOkDistributorDSE = optionOkDistributorDSE.replace("Ok_WALLET_DSE", ele.walletId);
-                
-              }
-              else if (ele.walletType.toUpperCase() === "DISTRIBUTOR" && ele.walletName.toUpperCase() === "OK")
-              {
-                optionOkDistributorDSE = optionOkDistributorDSE.replace("Ok_WALLET_DISTRIBUTOR", ele.walletId);
-                
-              }
-            }
-            transferTypeCurrent.push(JSON.parse(optionOkDistributorDSE));
-            transferTypeCurrent.push(JSON.parse(optionMyCashDistributorDSE));
-            transferTypeCurrent.push(JSON.parse(optionMyCashDSEDistributor));
-            transferTypeCurrent.push(JSON.parse(optionGeneralMyCashDistributor));
-            transferTypeCurrent.push(JSON.parse(optionMyCashDistributorGeneral));
-            
-            return transferTypeCurrent;
-  
-        }
-        
 
         handleSubmit = async () => {
-          let urlMM='https://okwalletpayment.onebank.com.bd/okepay/okbtbepay/';
+          let urlMM='https://okwalletpayment.onebank.com.bd/okwalletepay/okepay/';
           this.setState({transferLoading: true});
           let token=this.state.token;
           const { transferAmount,
@@ -209,62 +157,7 @@ class Transfer extends React.Component {
               }
           }
 
-        }
-
-        filterTransferTypes = () => {
-          
-            let transferTypes = this.getTransferTypes(this.state.wallets);
-
-              console.log(this.props.route.params.mID);
-              console.log(this.props.route.params.uID.walletName);
-            if(this.props.route.params.mID=="DSE" && this.props.route.params.uID.walletName== "MyCash"){
-              transferTypes = transferTypes.filter(function(item){
-                return item.value == 'TRANSFER_TYPE_MYCASH_DISTRIBUTOR_DSE';
-             }).map(function({label, value}){
-                 return {label, value};
-             });
-              console.log(transferTypes);
-              console.log(transferTypes[0]);
-            
-            }
-            else if(this.props.route.params.mID=="Ledger" && this.props.route.params.uID.walletName== "MyCash"){
-              transferTypes = transferTypes.filter(function(item){
-                return item.value == 'TRANSFER_TYPE_MYCASH_DISTRIBUTOR_GENERAL';
-             }).map(function({label, value}){
-                 return {label, value};
-             });
-           
-            }
-            else if(this.props.route.params.mID=="Ok B2B DSR" && this.props.route.params.uID.walletName== "Ok"){
-              transferTypes = transferTypes.filter(function(item){
-                return item.value == 'TRANSFER_TYPE_Ok_DISTRIBUTOR_DSE';
-             }).map(function({label, value}){
-                 return {label, value};
-             });
-          
-            }
-            else if(this.props.route.params.mID=="MyCash Distributor" && this.props.route.params.uID.walletName== "BDT"){
-              transferTypes = transferTypes.filter(function(item){
-                return item.value == 'TRANSFER_TYPE_GENERAL_MYCASH_DISTRIBUTOR';
-             }).map(function({label, value}){
-                 return {label, value};
-             });
-            
-            }
-            else if(this.props.route.params.mID=="MyCash Distributor" && this.props.route.params.uID.walletName== "MyCash"){
-              transferTypes = transferTypes.filter(function(item){
-                return item.value == 'TRANSFER_TYPE_MYCASH_DSE_DISTRIBUTOR';
-             }).map(function({label, value}){
-                 return {label, value};
-             });
-         
-            }
-            else{let transferTypes = this.getTransferTypes(this.state.wallets);}
-  
-            console.log(transferTypes);
-            return transferTypes;
-        }
-        
+        } 
 		  render() {   
          
           let transferTypes= this.filterTransferTypes();
@@ -334,4 +227,4 @@ class Transfer extends React.Component {
         
     }
 
-export default Transfer
+export default RiderCredit

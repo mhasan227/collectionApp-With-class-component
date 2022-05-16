@@ -29,6 +29,9 @@ const Tile = (props: Props) => {
             <Text style={styles.rightSectionSubtitle}>{props.subTitle}</Text>
           )}
         </View>
+        <View
+          style={styles.verticleLine}
+        />
         <View style={styles.leftSection}>
           <View
             style={{
@@ -96,6 +99,16 @@ const styles = StyleSheet.create({
   rightSectionSubtitle: {
     color: colors.primary, //#333
     marginTop: 4,
+  },
+  verticleLine: {
+    borderRightWidth: 1,
+    borderRightColor: '#daa520',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight:35,
+    paddingRight: 5,
+    marginRight: 5,
+    //width: 5,
   },
 });
 export default React.memo(Tile);

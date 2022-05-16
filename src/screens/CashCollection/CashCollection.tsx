@@ -14,7 +14,6 @@ import style from './style';
 import colors from '../../config/colors';
 import DialogContent from '../../component/DialogContent';
 import {CommonActions, useNavigation} from '@react-navigation/native';
-import get from 'lodash.get';
 import ApiCall from '../../networking/ApiCall';
 import SearchablePicker from '../../component/SearchablePicker';
 //import { WebView } from 'react-native-webview';
@@ -140,7 +139,7 @@ class CashCollection extends React.Component {
           console.log(this.state.token);
           let res = await ApiCall.api(body,token,path);
           this.setState({payee: res.result.response[0]}); // sudhu prothom tar list ana hoise 
-          let payees= res.result.response[0].map((val)=>({label: `${val.name}`,
+          let payees= res.result.response[0].map((val)=>({label: `${val.name} (${val.userId})`,
             value: val.userId,}));
           this.setState({getAllPayee: payees});
         }
@@ -167,6 +166,8 @@ class CashCollection extends React.Component {
         }
 
         handleSubmit = async () => {
+          this.setState({collectionLoading : true});
+          let urlMM='https://okwalletpayment.onebank.com.bd/okepay/okbtbepay/';
           let token=this.state.token;
           const {amount, 
                  merchantId,
@@ -179,13 +180,14 @@ class CashCollection extends React.Component {
                  reference2,
                  reference3,
                  collectionPin,
-                 payeePin}= this.state;
+                 payeePin,
+                 }= this.state;
           if (amount && merchantId && payeeId && collectionType && walletType){
-              Alert.alert(invoiceNo);
+              
               let body={
                         merchantId,
                         payeeId, 
-                        cashPointId,
+                        cashPointId: authUserId,
                         currency: walletType, 
                         collectionType, 
                         invoiceNo, 
@@ -203,6 +205,7 @@ class CashCollection extends React.Component {
               let path='collection-service/endpoint/collection';
               let res = await ApiCall.api(body,token,path);
               console.log(res);
+              this.setState({collectionLoading : false});
               if (res.result.result== 'Success'){
                 Alert.alert("Transfer successful");
                 this.props.navigation.goBack();

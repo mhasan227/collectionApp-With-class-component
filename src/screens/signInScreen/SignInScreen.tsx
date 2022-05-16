@@ -6,7 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {useNavigation} from '@react-navigation/native'
 import colors from '../../config/colors';
 import style from './style';
-//
+import messaging from '@react-native-firebase/messaging';
 import PushNotification, {Importance} from "react-native-push-notification";
 import {useDispatch, useSelector} from 'react-redux';
 import {login} from '../../redux/httpClient/api';
@@ -47,8 +47,10 @@ class SignInScreen extends React.Component {
     }
     handleSubmit = async () => {
       //const { dispatch } = this.props; //way of dispatch called
+      const fcmToken = await messaging().getToken();
       let user= this.state.userName;
       let pass= this.state.password;
+      //Alert.alert(fcmToken);
       //const navigation = useNavigation();
       //this.props.navigation.navigate("DrawerNavigator");
       //navigation.navigate('HomeScreen');
@@ -58,7 +60,8 @@ class SignInScreen extends React.Component {
         //const setData = async () => { const dataToSet = await ApiCall.getArticles(user,pass); }
         //console.log(ApiCall.getArticles());
         let body={"username": user,
-                  "password": pass
+                  "password": pass,
+                  "fcmToken": fcmToken
                 }
         let res;
         /*ApiCall.login(body).then(async resultt => console.log(resultt) &&
