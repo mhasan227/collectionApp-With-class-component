@@ -29,7 +29,7 @@ export default StyleSheet.create({
   },
   formInputLabel: {
     marginBottom: 4,
-    color: colors.dark,
+    color: colors.dark, //extra
   },
   formFooter: {
     marginTop: 60,

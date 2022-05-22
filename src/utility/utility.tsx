@@ -10,7 +10,8 @@ export function setAsyncStorage (result)  {
            const userName= JSON.stringify(result.result.userName);
            const userPhone= JSON.stringify(result.result.userPhone);
            const userImage= JSON.stringify(result.result.userImage);
-           const roleListName= JSON.stringify(result.result.roleList[0].name);
+           const roleListName= JSON.stringify(result.result.roleList[0].name); 
+           const taggedMerchantId= JSON.stringify(result.result.taggedMerchantId);
            AsyncStorage.setItem('isLoggedInn', token); 
            AsyncStorage.setItem('userId', userId);
            AsyncStorage.setItem('userName', userName);   
@@ -18,6 +19,7 @@ export function setAsyncStorage (result)  {
            AsyncStorage.setItem('userPhone', userPhone);   
            AsyncStorage.setItem('userImage', userImage);
            AsyncStorage.setItem('roleListName', roleListName);
+           AsyncStorage.setItem('taggedMerchantId', taggedMerchantId);
            //this.props.navigation.navigate('HomeScreen',{result});  //(optional)
            
         } catch (error) {

@@ -29,7 +29,6 @@ export default StyleSheet.create({
   },
   formInputLabel: {
     marginBottom: 4,
-    color: colors.dark,
   },
   formFooter: {
     marginTop: 60,
@@ -49,7 +48,6 @@ export default StyleSheet.create({
     fontSize: 14,
     height: 38,
     paddingHorizontal: 8,
-    justifyContent: 'center',
   },
   uploadWrapper: {
     marginTop: 16,
@@ -96,7 +94,7 @@ export default StyleSheet.create({
     flex: 1,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     marginVertical: 32,
   },
   submitButton: {
@@ -123,5 +121,5 @@ export default StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: colors.primary,
-  },
+  }
 });

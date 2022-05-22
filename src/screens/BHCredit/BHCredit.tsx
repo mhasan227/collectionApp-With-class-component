@@ -21,7 +21,7 @@ import HomeLayer from '../HomeLayer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from "react-native-custom-dropdown";
 
-class RiderCredit extends React.Component {  
+class BHCredit extends React.Component {  
     constructor(props) {
         super(props);
         console.log(this.props);
@@ -36,12 +36,9 @@ class RiderCredit extends React.Component {
           authResponse: '',
           toUserId: "",
           transferAmount: "",
-          payeeId: "",
-          rider: [],
-          payee: [],
-          getAllrider: [],
-          getAllpayee:[],
-          ridersLoading: false,
+          merchant: [],
+          getAllMerchant: [],
+          BHLoading: false,
         }
 
       }
@@ -60,8 +57,7 @@ class RiderCredit extends React.Component {
               token= JSON.parse(value2);
               user= JSON.parse(userId);
               console.log("transfer",this.state.token);
-              //this.getAllRiderListData();
-              this.getAllPayeeListData();
+              this.getAllMerchantListData();
             });
           });
         }
@@ -73,38 +69,21 @@ class RiderCredit extends React.Component {
         sendvalue=(key , value) => {
           this.setState({[key]: value});
         }
-        getAllRiderListData = async () => {
+        getAllMerchantListData = async () => {
           
           let body={"accountId": this.state.authUserId,
                    };
-          let path='authorization-service/endpoint/user/rider';
-          
-            console.log("transfer 2",this.state.authUserId);
-          
+          let path='authorization-service/endpoint/user/merchant';
+          console.log(this.state.token);
           let res = await ApiCall.api(body,this.state.token,path);
-          console.log(res.result.response[0]);
-          console.log(res);
-          this.setState({rider: res.result.response[0]});
-          let riders= res.result.response[0].map((val)=>({label: `${val.name} (${val.userId})`,
-          value: val.userId,}));
-          this.setState({getAllrider: riders});
+          this.setState({merchant: res.result.response[0]}); 
+          let merchants= res.result.response[0].map((val)=>({label: `${val.name} (${val.userId})`,
+            value: val.userId,}));
+          this.setState({getAllMerchant: merchants});
         }
-        getAllPayeeListData = async () => {
-          
-          let body={"accountId": this.state.authUserId,
-                   };
-          let path='authorization-service/endpoint/user/payee';
-          
-          let res = await ApiCall.api(body,this.state.token,path);
-          console.log(res.result.response[0]);
-          console.log(res);
-          this.setState({payee: res.result.response[0]});
-          let payees= res.result.response[0].map((val)=>({label: `${val.name} (${val.userId})`,
-          value: val.userId,}));
-          this.setState({getAllpayee: payees});
-        }
+        
         handleSubmit = async () => {
-          this.setState({ridersLoading: true});
+          this.setState({BHLoading: true});
           let token=this.state.token;
           const { toUserId,
                   transferAmount,
@@ -120,10 +99,9 @@ class RiderCredit extends React.Component {
                         toUserId,
                         transferAmount,
                    };
-              Alert.alert(toUserId);
-              let path='collection-service/endpoint/wallet/topuprider';
+              let path='collection-service/endpoint/wallet/topupbh';
               let res = await ApiCall.api(body,token,path);
-              this.setState({ridersLoading: false});
+              this.setState({BHLoading: false});
               console.log(res);
               if (res.result.result== 'Success'){
                   Alert.alert("Successful");
@@ -142,47 +120,47 @@ class RiderCredit extends React.Component {
           <DialogContent>  
             <View style={style.formBody}>
               <Text style={style.formBodyTitle}>
-                Rider Credit Point Transfer
+                BH Credit Point Transfer
               </Text>
-              <View style={style.formBodyInputWrapper}>
-                <Text style={style.formInputLabel}>Payees</Text>
-                <SearchablePicker
-                    updateKey="toUserId"
-                    defaultValue={this.state.toUserId}
-                    items={this.state.getAllpayee}
-                    onChangeItem={this.sendvalue}
-                    searchablePlaceholder={'Select Payee'}
-                  />
-              </View>
-              <View style={style.formBodyInputWrapper}>
-                <Text style={style.formInputLabel}>Amount</Text>
-                <TextInput
-                  style={style.formInput}
-                  keyboardType={'number-pad'}
-                  value={this.state.transferAmount}
-                  onChangeText={(text) => this.setInputValue('transferAmount', text)}
-                />
-              </View>
-              <View style={style.buttonWrapper}>
-                <TouchableOpacity
-                  style={style.cancelButton}
-                  onPress={() => {
-                    this.props.navigation.goBack();
-                  }}
-                  disabled={false}>
-                <Text style={style.cancelButtonText}>Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={style.submitButton}
-                  onPress={this.handleSubmit}
-                  disabled={this.state.ridersLoading}>
-                  {this.state.ridersLoading ? (
-                    <ActivityIndicator size={'small'} color={colors.white} />
-                  ) : (
-                    <Text style={style.submitButtonText}>Submit</Text>
-                  )}
-                </TouchableOpacity>
-              </View>
+                  <View style={style.formBodyInputWrapper}>
+                    <Text style={style.formInputLabel}>Merchant</Text>
+                    <SearchablePicker
+                      updateKey="toUserId"
+                      defaultValue={this.state.toUserId}
+                      items={this.state.getAllMerchant}
+                      onChangeItem={this.sendvalue}
+                      searchablePlaceholder={'Select Merchant'}
+                    />
+                  </View>
+                  <View style={style.formBodyInputWrapper}>
+                    <Text style={style.formInputLabel}>Amount</Text>
+                    <TextInput
+                      style={style.formInput}
+                      keyboardType={'number-pad'}
+                      value={this.state.transferAmount}
+                      onChangeText={(text) => this.setInputValue('transferAmount', text)}
+                    />
+                  </View>
+                  <View style={style.buttonWrapper}>
+                    <TouchableOpacity
+                      style={style.cancelButton}
+                      onPress={() => {
+                        this.props.navigation.goBack();
+                      }}
+                      disabled={false}>
+                      <Text style={style.cancelButtonText}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={style.submitButton}
+                      onPress={this.handleSubmit}
+                      disabled={this.state.BHLoading}>
+                      {this.state.BHLoading ? (
+                        <ActivityIndicator size={'small'} color={colors.white} />
+                      ) : (
+                        <Text style={style.submitButtonText}>Submit</Text>
+                      )}
+                    </TouchableOpacity>
+                  </View>
             </View>
          </DialogContent>
 
@@ -191,4 +169,4 @@ class RiderCredit extends React.Component {
         
     }
 
-export default RiderCredit
+export default BHCredit

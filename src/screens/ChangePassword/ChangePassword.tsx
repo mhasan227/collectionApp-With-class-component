@@ -22,24 +22,6 @@ import ApiCall from '../../networking/ApiCall';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from "react-native-custom-dropdown";
 
-
-
-interface FormData {
-  merchantId?: string;
-  payeeId?: string;
-  collectionType?: string;
-  invoiceNo?: string;
-  amount?: string;
-  walletType?: string;
-  reference1?: string;
-  reference2?: string;
-  reference3?: string;
-  collectionPin?: string;
-  payeePin?: string;
-}
-
-//let urlMM='https://okwalletpayment.onebank.com.bd/okwalletepay/okepay/';
-
 class ChangePassword extends React.Component {  
     constructor(props) {
         super(props);
@@ -80,7 +62,6 @@ class ChangePassword extends React.Component {
                 token= JSON.parse(value2);
                 user= JSON.parse(userId);
                 role= JSON.parse(roleListName);
-                //console.log("transfer",this.state.role);
                 this.setState({test: ""});
                 
               });

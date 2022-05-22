@@ -71,7 +71,7 @@ class SignInScreen extends React.Component {
         console.log(await ApiCall.login(body));
         res = await ApiCall.login(body);
         console.log(res.result.result);
-        console.log(res.result.roleList[0].name);
+        //console.log(res.result.roleList[0].taggedMerchantId);
         this.setInputValue("loginData", false);
         if(res.result.result=="FAILURE"){
           Alert.alert('Failed', 'Incorrect Userid or Password Try Again');

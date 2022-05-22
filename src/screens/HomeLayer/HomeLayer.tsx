@@ -658,13 +658,11 @@ class HomeLayer extends React.Component {
             console.log(this.state.token);
             let res = await ApiCall.api(body,this.state.token,path);
             console.log(res);
-                //balance=content.result.data.balance;
-                //setbalance(content.result.data.balance); 
-                this.setbalance(res.result.data.balance);    
+            this.setbalance(res.result.data.balance);    
           }
           
           this.setbalanceVisible(!balanceVisible);
-          setTimeout(() => {this.setbalanceVisible(false)},5000);
+          setTimeout(() => {this.setbalanceVisible(false)},4000);
         }; 
 
       

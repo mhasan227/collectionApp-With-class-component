@@ -11,8 +11,50 @@ import data from '../../component/DrawerContent/data';
 import ApiCall from '../../networking/ApiCall';
 import style from "./style";
 import {Menu} from "./Menu";
+import {ROLE} from "../../types";
 const notifService = new NotifService();
-
+const menusCP = [
+	{
+		"title": "Deposit",
+		"icon": require("../../../assets/deposit4.png"),
+		"routeKey": "Deposit",
+	},
+	{
+		"title": "Agent Sell",
+		"icon": require("../../../assets/seller.png"),
+		"routeKey": "AgentSell",
+	},
+	{
+		"title": "Transfer",
+		"icon": require("../../../assets/money-transfer.png"),
+		"routeKey": "Transfer",
+	},
+	{
+		"title": "Collection",
+		"icon": require("../../../assets/deposit.png"),
+		"routeKey": "CashCollection",
+	},
+	{
+		"title": "Send Money",
+		"icon": require("../../../assets/send.png"),
+		"routeKey": "PayeeSendMoney",
+	},
+	{
+		"title": "Manager Credit",
+		"icon": require("../../../assets/manager.png"),
+		"routeKey": "ManagerCredit",
+	},
+	{
+		"title": "BH Credit",
+		"icon": require("../../../assets/BH.png"),
+		"routeKey": "BHCredit",
+	},
+	{
+		"title": "Rider Credit",
+		"icon": require("../../../assets/rider.png"),
+		"routeKey": "RiderCredit",
+	},
+];
 class HomeScreen extends React.Component {  
     constructor(props) {
         super(props);
@@ -22,8 +64,6 @@ class HomeScreen extends React.Component {
         
         console.log("working",+data);
         this.setInputValue = this.setInputValue.bind(this);
-        //this.getAllWallet = this.getAllWallet.bind(this);
-        //this.setInputValue = this.setInputValue.bind(this);
         this.state = {
           token:'',
           data: '',
@@ -37,7 +77,7 @@ class HomeScreen extends React.Component {
         setInputValue(property, val) {
           this.setState({ [property]: val });
         }
-        checkToken = async () => {
+        checkToken = () => {
           let token;
           let userId;
           AsyncStorage.getItem('isLoggedInn').then((value2) => {
@@ -46,24 +86,12 @@ class HomeScreen extends React.Component {
               this.setState({authUserId: JSON.parse(userId)});
               token= JSON.parse(value2);
               userId= JSON.parse(userId);
-              //console.log(JSON.parse(value2));
+              this.getAllWallet();
             });
           });
-            const fcmToken = await messaging().getToken();
-            if (fcmToken) {
-               console.log("token",fcmToken);
-               let body={"userId": this.state.authUserId,
-                         "token": fcmToken
-                }
-               let res = await ApiCall.setfcmToken(body,token);
-               console.log(res);
-               messaging().onNotificationOpenedApp(this.onNotificationHandler);
-               messaging().onMessage(this.onNotificationHandler);
-               messaging().setBackgroundMessageHandler(this.onNotificationHandler);
-            }else{
-               console.log("Fcm token not available");
-            } 
-//
+          messaging().onNotificationOpenedApp(this.onNotificationHandler);
+          messaging().onMessage(this.onNotificationHandler);
+          messaging().setBackgroundMessageHandler(this.onNotificationHandler);
       }
          notifier = (remoteMessage: any) => {
             let title = 'Maxis Collection';
@@ -91,22 +119,15 @@ class HomeScreen extends React.Component {
 
         onNotificationHandler = async (remoteMessage: any) => {
             this.notifier(remoteMessage);
-            if(remoteMessage.data.title== "Lifting request rejected"){
+            /*if(remoteMessage.data.title== "Lifting request rejected"){
               this.props.navigation.navigate("InformationScreen");
-            }
+            }*/
         };
         load = async () =>{
-         await this.checkToken();
-         this.getAllWallet();
-
-          
-
+         this.checkToken();
         }
         componentDidMount() {
           this.load();
-            /*messaging().onMessage(async remoteMessage => {
-                Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-              });*/ // its working shows a alert with data
         }
 
         handleOnClickOfWalletRedirrect = (wallet:any,balance:any) => async () => {
@@ -115,8 +136,7 @@ class HomeScreen extends React.Component {
           this.props.navigation.navigate("HomeLayer",{wallet,balance});
           }
           console.log('antu test');
-                console.log(wallet);
-          
+          console.log(wallet);
         }; 
 
         getAllWallet = async () => {
@@ -133,28 +153,26 @@ class HomeScreen extends React.Component {
             <DialogContent style={{flex : 1, backgroundColor: 'red'}}>
 	            <View style={{padding: 16}}>
                 
-              {<View style={style.bodySection}>
-                
-                {this.state.wallets.map((wallet: any, index: any) =>  (
+                <View style={style.bodySection}>
                   
-                  <Menu
-                    key={index}
-                    onPress={this.handleOnClickOfWalletRedirrect(wallet)}
-                    title={wallet.walletName === "MyCash"? wallet.walletType === "Distributor"? "MyCash Distributor"
-                      : wallet.walletType === "DSE"? "MyCash DSE" : wallet.walletType ==="Local Merchant"?"MyCash Agent":
-                      wallet.walletType ==="Mother Merchant"?"MyCash Partner":""  : wallet.walletName === "Ok"? 
-                      wallet.walletType=== "Distributor"? "Ok B2B Distributor\n"+wallet.walletId:wallet.walletType === "DSE"? 
-                      "Ok B2B DSR\n"+wallet.walletId: wallet.walletType ==="Local Merchant"?"Ok Agent": 
-                      wallet.walletType ==="Mother Merchant"?"Ok Partner":""  : "Ledger" }
-                    icon={wallet.walletName === "MyCash"?require("../../../assets/mycash.jpg"):
-                        wallet.walletName === "Ok"?require("../../../assets/ok.png"):
-                        wallet.walletName === "BDT"?require("../../../assets/logo.png"):""}
-                    //routeKey={wallet.walletType === "Distributor"? "RiderCredit" : wallet.walletType === "DSE"? "Deposit" : "BHCredit" }
-                  />
-                ))}
-                </View>}
-	                  {/*<Text style={style.temp}>Hello homepage 1{this.state.authUserId}</Text>
-                    <Button style={style.button} title='PressRoute' onPress={()=>this.props.navigation.navigate("InformationScreen")}></Button>*/}
+                  {this.state.wallets.map((wallet: any, index: any) =>  (
+                    
+                    <Menu
+                      key={index}
+                      onPress={this.handleOnClickOfWalletRedirrect(wallet)}
+                      title={wallet.walletName === "MyCash"? wallet.walletType === "Distributor"? "MyCash Distributor"
+                        : wallet.walletType === "DSE"? "MyCash DSE" : wallet.walletType ==="Local Merchant"?"MyCash Agent":
+                        wallet.walletType ==="Mother Merchant"?"MyCash Partner":""  : wallet.walletName === "Ok"? 
+                        wallet.walletType=== "Distributor"? "Ok B2B Distributor\n"+wallet.walletId:wallet.walletType === "DSE"? 
+                        "Ok B2B DSR\n"+wallet.walletId: wallet.walletType ==="Local Merchant"?"Ok Agent": 
+                        wallet.walletType ==="Mother Merchant"?"Ok Partner":""  : "Ledger" }
+                      icon={wallet.walletName === "MyCash"?require("../../../assets/mycash.jpg"):
+                          wallet.walletName === "Ok"?require("../../../assets/ok.png"):
+                          wallet.walletName === "BDT"?require("../../../assets/logo.png"):""}
+                      //routeKey={wallet.walletType === "Distributor"? "RiderCredit" : wallet.walletType === "DSE"? "Deposit" : "BHCredit" }
+                    />
+                  ))}
+                </View>
 	            </View>
             </DialogContent>
 	       )

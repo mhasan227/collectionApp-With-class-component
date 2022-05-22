@@ -16,12 +16,11 @@ import DialogContent from '../../component/DialogContent';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import ApiCall from '../../networking/ApiCall';
 import SearchablePicker from '../../component/SearchablePicker';
-//import { WebView } from 'react-native-webview';
 import HomeLayer from '../HomeLayer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from "react-native-custom-dropdown";
 
-class RiderCredit extends React.Component {  
+class MMCashout extends React.Component {  
     constructor(props) {
         super(props);
         console.log(this.props);
@@ -34,14 +33,15 @@ class RiderCredit extends React.Component {
           authUserId: '',
           userName: '',
           authResponse: '',
-          toUserId: "",
-          transferAmount: "",
-          payeeId: "",
-          rider: [],
-          payee: [],
-          getAllrider: [],
-          getAllpayee:[],
-          ridersLoading: false,
+          amount: '',
+          agentIndex: '',
+          reference: '',
+          comments: '',
+          pin: '',
+          currency: '',
+          agent: [],
+          getAllagent: [],
+          MMCashoutLoading: false,
         }
 
       }
@@ -60,8 +60,7 @@ class RiderCredit extends React.Component {
               token= JSON.parse(value2);
               user= JSON.parse(userId);
               console.log("transfer",this.state.token);
-              //this.getAllRiderListData();
-              this.getAllPayeeListData();
+              this.getAllAgentListDataMM();
             });
           });
         }
@@ -73,57 +72,43 @@ class RiderCredit extends React.Component {
         sendvalue=(key , value) => {
           this.setState({[key]: value});
         }
-        getAllRiderListData = async () => {
+        getAllAgentListDataMM = async () => {
           
           let body={"accountId": this.state.authUserId,
                    };
-          let path='authorization-service/endpoint/user/rider';
-          
-            console.log("transfer 2",this.state.authUserId);
-          
+          let path='authorization-service/endpoint/user/agent';
+          console.log("transfer 2",this.state.authUserId);
           let res = await ApiCall.api(body,this.state.token,path);
           console.log(res.result.response[0]);
           console.log(res);
-          this.setState({rider: res.result.response[0]});
-          let riders= res.result.response[0].map((val)=>({label: `${val.name} (${val.userId})`,
-          value: val.userId,}));
-          this.setState({getAllrider: riders});
-        }
-        getAllPayeeListData = async () => {
-          
-          let body={"accountId": this.state.authUserId,
-                   };
-          let path='authorization-service/endpoint/user/payee';
-          
-          let res = await ApiCall.api(body,this.state.token,path);
-          console.log(res.result.response[0]);
-          console.log(res);
-          this.setState({payee: res.result.response[0]});
-          let payees= res.result.response[0].map((val)=>({label: `${val.name} (${val.userId})`,
-          value: val.userId,}));
-          this.setState({getAllpayee: payees});
+          this.setState({agent: res.result.response[0]});
+          let Agents= res.result.response[0].map((val,index)=>({label: val.name + ' (' + val.userId + ')',
+          value: `${index}`,}));
+          console.log(Agents);
+          this.setState({getAllagent: Agents});
         }
         handleSubmit = async () => {
-          this.setState({ridersLoading: true});
+          this.setState({MMCashoutLoading: true});
           let token=this.state.token;
-          const { toUserId,
-                  transferAmount,
+          const { amount,
+                  agentIndex,
+                  pin,
                   authUserId,
+                  agent,
                  }= this.state;
-          console.log("imp",authUserId);
-          console.log("imp",transferAmount);
-
-          //Alert.alert(transferType);
-          if (transferAmount&& authUserId && toUserId){
+                 //Alert.alert(agent[agentIndex].userId);
+          if (amount && pin && authUserId && agentIndex){
               //Alert.alert(token);
-              let body={userId: authUserId,
-                        toUserId,
-                        transferAmount,
+              let body={
+                        agentId:agent[agentIndex].userId,
+                        merchantId: authUserId,
+                        cashoutMerchantRequestAmount: amount,
+                        merchantWalletPIN: pin
                    };
-              Alert.alert(toUserId);
-              let path='collection-service/endpoint/wallet/topuprider';
+              
+              let path='collection-service/endpoint/cashout';
               let res = await ApiCall.api(body,token,path);
-              this.setState({ridersLoading: false});
+              this.setState({MMCashoutLoading: false});
               console.log(res);
               if (res.result.result== 'Success'){
                   Alert.alert("Successful");
@@ -142,25 +127,32 @@ class RiderCredit extends React.Component {
           <DialogContent>  
             <View style={style.formBody}>
               <Text style={style.formBodyTitle}>
-                Rider Credit Point Transfer
+                Get Cash
               </Text>
-              <View style={style.formBodyInputWrapper}>
-                <Text style={style.formInputLabel}>Payees</Text>
-                <SearchablePicker
-                    updateKey="toUserId"
-                    defaultValue={this.state.toUserId}
-                    items={this.state.getAllpayee}
-                    onChangeItem={this.sendvalue}
-                    searchablePlaceholder={'Select Payee'}
-                  />
-              </View>
               <View style={style.formBodyInputWrapper}>
                 <Text style={style.formInputLabel}>Amount</Text>
                 <TextInput
                   style={style.formInput}
                   keyboardType={'number-pad'}
-                  value={this.state.transferAmount}
-                  onChangeText={(text) => this.setInputValue('transferAmount', text)}
+                  value={this.state.amount}
+                  onChangeText={(text) => this.setInputValue('amount', text)}
+                />
+              </View>
+              <View style={style.formBodyInputWrapper}>
+                <Text style={style.formInputLabel}>Agent</Text>
+                <SearchablePicker
+                  updateKey="agentIndex"
+                  defaultValue={this.state.agentIndex}
+                  items={this.state.getAllagent}
+                  onChangeItem={this.sendvalue}
+                />
+              </View>
+              <View style={style.formBodyInputWrapper}>
+                <Text style={style.formInputLabel}>PIN</Text>
+                <TextInput
+                  style={style.formInput}
+                  value={this.state.pin}
+                  onChangeText={(text) => this.setInputValue('pin', text)}
                 />
               </View>
               <View style={style.buttonWrapper}>
@@ -170,13 +162,13 @@ class RiderCredit extends React.Component {
                     this.props.navigation.goBack();
                   }}
                   disabled={false}>
-                <Text style={style.cancelButtonText}>Cancel</Text>
+                  <Text style={style.cancelButtonText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={style.submitButton}
                   onPress={this.handleSubmit}
-                  disabled={this.state.ridersLoading}>
-                  {this.state.ridersLoading ? (
+                  disabled={this.state.MMCashoutLoading}>
+                  {this.state.MMCashoutLoading ? (
                     <ActivityIndicator size={'small'} color={colors.white} />
                   ) : (
                     <Text style={style.submitButtonText}>Submit</Text>
@@ -191,4 +183,4 @@ class RiderCredit extends React.Component {
         
     }
 
-export default RiderCredit
+export default MMCashout

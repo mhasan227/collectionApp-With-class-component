@@ -19,11 +19,7 @@ class CollectionListView extends React.Component {
         console.log(this.props);
         const data = this.props.route.params;
         let wallets = [];
-        
-        console.log("working",+data);
         this.setInputValue = this.setInputValue.bind(this);
-        //this.getAllWallet = this.getAllWallet.bind(this);
-        //this.setInputValue = this.setInputValue.bind(this);
         this.state = {
           token:'',
           data: '',
@@ -66,7 +62,7 @@ class CollectionListView extends React.Component {
         }
         show = async (token,userId,role) => {
           let vare;
-          //this.setState({test: ""});
+          this.setState({test: ""});
           if (this.props.route.params.data=='Collection'){
             vare = await ListData.getCollectionData(token,userId,role);
           }
@@ -100,8 +96,8 @@ class CollectionListView extends React.Component {
           this.setState({test: vare});
           //return vare;
         }
-        componentDidUpdate(prevProps, prevState) {
-          if (prevProps.route.params.data !== this.props.route.params.data) {
+      componentDidUpdate(prevProps, prevState) {
+        if (prevProps.route.params.data !== this.props.route.params.data) {
             this.getAsyncStorage();
           }
   }
@@ -261,7 +257,7 @@ class CollectionListView extends React.Component {
             
           }
 		render() {   
-      //this.props.route.params?this.props.route.params.data : null
+      
 	        return (
             <DialogContent style={{flex : 1, backgroundColor: 'red'}}>
 	            <View

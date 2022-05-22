@@ -21,7 +21,7 @@ import HomeLayer from '../HomeLayer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from "react-native-custom-dropdown";
 
-class RiderCredit extends React.Component {  
+class ManagerCredit extends React.Component {  
     constructor(props) {
         super(props);
         console.log(this.props);
@@ -36,12 +36,10 @@ class RiderCredit extends React.Component {
           authResponse: '',
           toUserId: "",
           transferAmount: "",
-          payeeId: "",
-          rider: [],
-          payee: [],
-          getAllrider: [],
-          getAllpayee:[],
-          ridersLoading: false,
+          manager: [],
+          getAllManager: [],
+          transferType: 'TRANSFER_TYPE_GENERAL_DISTRIBUTOR_GENERAL_MANAGER',
+          ManagerLoading: false,
         }
 
       }
@@ -60,8 +58,7 @@ class RiderCredit extends React.Component {
               token= JSON.parse(value2);
               user= JSON.parse(userId);
               console.log("transfer",this.state.token);
-              //this.getAllRiderListData();
-              this.getAllPayeeListData();
+              this.getAllMerchantListData();
             });
           });
         }
@@ -73,57 +70,34 @@ class RiderCredit extends React.Component {
         sendvalue=(key , value) => {
           this.setState({[key]: value});
         }
-        getAllRiderListData = async () => {
-          
-          let body={"accountId": this.state.authUserId,
-                   };
-          let path='authorization-service/endpoint/user/rider';
-          
-            console.log("transfer 2",this.state.authUserId);
-          
-          let res = await ApiCall.api(body,this.state.token,path);
-          console.log(res.result.response[0]);
-          console.log(res);
-          this.setState({rider: res.result.response[0]});
-          let riders= res.result.response[0].map((val)=>({label: `${val.name} (${val.userId})`,
-          value: val.userId,}));
-          this.setState({getAllrider: riders});
+        getAllMerchantListData = async () => {
+          let path='authorization-service/endpoint/user/get-all-managers';
+          console.log(this.state.token);
+          let res = await ApiCall.apiget(this.state.token,path);
+          this.setState({manager: res.result.response}); 
+          let managers= res.result.response.map((val)=>({label: `${val.name} (${val.userId})`,
+            value: val.userId,}));
+          this.setState({getAllManager: managers});
         }
-        getAllPayeeListData = async () => {
-          
-          let body={"accountId": this.state.authUserId,
-                   };
-          let path='authorization-service/endpoint/user/payee';
-          
-          let res = await ApiCall.api(body,this.state.token,path);
-          console.log(res.result.response[0]);
-          console.log(res);
-          this.setState({payee: res.result.response[0]});
-          let payees= res.result.response[0].map((val)=>({label: `${val.name} (${val.userId})`,
-          value: val.userId,}));
-          this.setState({getAllpayee: payees});
-        }
+        
         handleSubmit = async () => {
-          this.setState({ridersLoading: true});
+          this.setState({BHLoading: true});
           let token=this.state.token;
           const { toUserId,
                   transferAmount,
                   authUserId,
+                  transferType
                  }= this.state;
-          console.log("imp",authUserId);
-          console.log("imp",transferAmount);
-
-          //Alert.alert(transferType);
           if (transferAmount&& authUserId && toUserId){
               //Alert.alert(token);
               let body={userId: authUserId,
                         toUserId,
                         transferAmount,
+                        transferType
                    };
-              Alert.alert(toUserId);
-              let path='collection-service/endpoint/wallet/topuprider';
+              let path='collection-service/endpoint/wallet/transfer-by-type';
               let res = await ApiCall.api(body,token,path);
-              this.setState({ridersLoading: false});
+              this.setState({BHLoading: false});
               console.log(res);
               if (res.result.result== 'Success'){
                   Alert.alert("Successful");
@@ -142,17 +116,17 @@ class RiderCredit extends React.Component {
           <DialogContent>  
             <View style={style.formBody}>
               <Text style={style.formBodyTitle}>
-                Rider Credit Point Transfer
+                Maxis Manager Credit Point Transfer
               </Text>
               <View style={style.formBodyInputWrapper}>
-                <Text style={style.formInputLabel}>Payees</Text>
+                <Text style={style.formInputLabel}>Manager</Text>
                 <SearchablePicker
-                    updateKey="toUserId"
-                    defaultValue={this.state.toUserId}
-                    items={this.state.getAllpayee}
-                    onChangeItem={this.sendvalue}
-                    searchablePlaceholder={'Select Payee'}
-                  />
+                  updateKey="toUserId"
+                  defaultValue={this.state.toUserId}
+                  items={this.state.getAllManager}
+                  onChangeItem={this.sendvalue}
+                  searchablePlaceholder={'Select Manager'}
+                />
               </View>
               <View style={style.formBodyInputWrapper}>
                 <Text style={style.formInputLabel}>Amount</Text>
@@ -170,17 +144,17 @@ class RiderCredit extends React.Component {
                     this.props.navigation.goBack();
                   }}
                   disabled={false}>
-                <Text style={style.cancelButtonText}>Cancel</Text>
+                  <Text style={style.cancelButtonText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={style.submitButton}
                   onPress={this.handleSubmit}
-                  disabled={this.state.ridersLoading}>
-                  {this.state.ridersLoading ? (
-                    <ActivityIndicator size={'small'} color={colors.white} />
+                  disabled={this.state.ManagerLoading}>
+                  {this.state.ManagerLoading ? (
+                     <ActivityIndicator size={'small'} color={colors.white} />
                   ) : (
                     <Text style={style.submitButtonText}>Submit</Text>
-                  )}
+                      )}
                 </TouchableOpacity>
               </View>
             </View>
@@ -191,4 +165,4 @@ class RiderCredit extends React.Component {
         
     }
 
-export default RiderCredit
+export default ManagerCredit

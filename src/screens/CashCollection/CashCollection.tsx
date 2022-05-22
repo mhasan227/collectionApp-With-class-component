@@ -21,23 +21,6 @@ import HomeLayer from '../HomeLayer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from "react-native-custom-dropdown";
 
-
-interface FormData {
-  merchantId?: string;
-  payeeId?: string;
-  collectionType?: string;
-  invoiceNo?: string;
-  amount?: string;
-  walletType?: string;
-  reference1?: string;
-  reference2?: string;
-  reference3?: string;
-  collectionPin?: string;
-  payeePin?: string;
-}
-
-//let urlMM='https://okwalletpayment.onebank.com.bd/okwalletepay/okepay/';
-
 class CashCollection extends React.Component {  
     constructor(props) {
         super(props);
@@ -222,7 +205,7 @@ class CashCollection extends React.Component {
                 }else if(res.error){
                   urlMM=urlMM + res.result.message;
                   
-                  navigation.navigate("WebViewUn",{urlMM});
+                  this.props.navigation.navigate("WebViewUn",{urlMM});
                 }
               }
           }
